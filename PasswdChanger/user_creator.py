@@ -1,5 +1,4 @@
 import wx
-from modules.config_manager import ConfigManager
 
 
 class UserCreator(wx.Frame):
@@ -56,7 +55,7 @@ class UserCreator(wx.Frame):
 
     def on_create(self, event):
         try:
-            from modules.cmd import CommandExecutor
+            from modules.cmd_executor import CommandExecutor
             username = self.username.Value.strip()
             password = self.password.Value
             confirm = self.confirm_pass.Value

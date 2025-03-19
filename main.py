@@ -1,7 +1,9 @@
-import sys
 import ctypes
+import sys
 import traceback
+
 import wx
+
 from modules import ConfigManager
 from modules.debug_window import DebugLogger
 

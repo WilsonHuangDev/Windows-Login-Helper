@@ -2,15 +2,16 @@ import datetime
 import subprocess
 import threading
 import wx
-
 from modules.debug_window import DebugLogger
-from .cmd import CommandExecutor
+from modules.cmd_executor import CommandExecutor
+from PasswdChanger.passwd_changer import PasswordChanger
+from PasswdChanger.user_creator import UserCreator
 
 
 class MainWindow(wx.Frame):
     def __init__(self):
-        style = wx.CAPTION | wx.CLOSE_BOX | wx.SYSTEM_MENU
-        super().__init__(None, title="系统工具集", size=(500, 250), style=style)
+        style = wx.CAPTION | wx.STAY_ON_TOP | wx.CLOSE_BOX
+        super().__init__(None, title="系统工具集", size=(250, 350), style=style)
         self.init_ui()
         self._init_timer()
         self.Center()
@@ -30,7 +31,7 @@ class MainWindow(wx.Frame):
         main_sizer = wx.BoxSizer(wx.VERTICAL)
 
         # 按钮区
-        btn_sizer = wx.FlexGridSizer(rows=1, cols=3, vgap=15, hgap=30)
+        btn_sizer = wx.FlexGridSizer(rows=3, cols=1, vgap=15, hgap=30)
         btn_pass = wx.Button(panel, label="修改用户密码", size=(130, 40))
         btn_user = wx.Button(panel, label="创建新用户", size=(130, 40))
         btn_cmd = wx.Button(panel, label="命令行工具", size=(130, 40))
@@ -70,10 +71,10 @@ class MainWindow(wx.Frame):
         # 如果这是最后一个窗口，退出主循环
         if wx.GetApp().GetTopWindow() is None:
             print("MainWindow closing.")
-            wx.GetApp().Exit()
+            wx.GetApp().ExitMainLoop()
 
     def on_password(self, event):
-        from PasswdChanger.passwd import PasswordChanger
+        from PasswdChanger.passwd_changer import PasswordChanger
         PasswordChanger().Show()
         self.Close()
 

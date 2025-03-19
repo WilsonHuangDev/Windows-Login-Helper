@@ -1,7 +1,7 @@
-import os
-import datetime
 import configparser
-from modules.config_manager import ConfigManager
+import datetime
+import os
+
 from modules.debug_window import DebugLogger
 
 

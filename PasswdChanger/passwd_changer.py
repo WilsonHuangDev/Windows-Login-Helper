@@ -59,7 +59,7 @@ class PasswordChanger(wx.Frame):
 
     def on_change(self, event):
         try:
-            from modules.cmd import CommandExecutor
+            from modules.cmd_executor import CommandExecutor
             username = self.username.Value.strip()
             new_pass = self.new_pass.Value
             confirm_pass = self.confirm_pass.Value

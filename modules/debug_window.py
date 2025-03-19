@@ -1,6 +1,7 @@
-import wx
 import datetime
 import multiprocessing
+
+import wx
 
 
 class DebugLogger:
