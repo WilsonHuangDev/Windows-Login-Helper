@@ -9,7 +9,7 @@ from modules.debug_window import DebugLogger
 class LoginWindow(wx.Frame):
     def __init__(self):
         style = wx.CAPTION | wx.STAY_ON_TOP | wx.CLOSE_BOX
-        super().__init__(None, title="系统登录", size=(380, 220), style=style)
+        super().__init__(None, title="Windows 登录辅助工具", size=(380, 220), style=style)
         self._load_config()
         self.init_ui()
         self._init_timer()
@@ -49,13 +49,14 @@ class LoginWindow(wx.Frame):
         # 时间显示
         self.time_display = wx.StaticText(panel, label="", style=wx.ALIGN_CENTER)
 
+        main_sizer.AddStretchSpacer(1)
         main_sizer.Add(input_sizer, 0, wx.ALL | wx.EXPAND, 15)
         main_sizer.Add(btn_sizer, 0, wx.ALIGN_CENTER | wx.BOTTOM, 10)
+        main_sizer.AddStretchSpacer(1)
         main_sizer.Add(self.time_display, 0, wx.ALIGN_CENTER | wx.BOTTOM, 10)
 
         panel.SetSizer(main_sizer)
 
-        # 绑定事件（已修复）
         btn_ok.Bind(wx.EVT_BUTTON, self.on_login)
         self.password_entry.Bind(wx.EVT_TEXT_ENTER, self.on_login)
 

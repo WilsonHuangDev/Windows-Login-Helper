@@ -4,7 +4,7 @@ import wx
 class UserCreator(wx.Frame):
     def __init__(self):
         style = wx.CAPTION | wx.STAY_ON_TOP | wx.CLOSE_BOX
-        super().__init__(None, title="创建新用户", size=(400, 250), style=style)
+        super().__init__(None, title="Windows 登录辅助工具", size=(400, 250), style=style)
         self.init_ui()
         self.Center()
 

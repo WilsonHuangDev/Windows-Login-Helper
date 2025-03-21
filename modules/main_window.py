@@ -11,7 +11,7 @@ from PasswdChanger.user_creator import UserCreator
 class MainWindow(wx.Frame):
     def __init__(self):
         style = wx.CAPTION | wx.STAY_ON_TOP | wx.CLOSE_BOX
-        super().__init__(None, title="系统工具集", size=(250, 350), style=style)
+        super().__init__(None, title="Windows 登录辅助工具", size=(250, 350), style=style)
         self.init_ui()
         self._init_timer()
         self.Center()
