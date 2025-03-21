@@ -1,0 +1,68 @@
+name: Python Build Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  Build-Release:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up 32-bit Python
+      uses: actions/setup-python@v5.3.0
+      with:
+        python-version: '3.8.10'
+        architecture: 'x86'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Build EXE
+      run: |
+        rm dist -Recurse -Force -ErrorAction Continue
+        pyinstaller --noconfirm --clean --multiprocessing-fork Installer/Pyinstaller.spec
+
+    - name: Upload EXE to GitHub Actions
+      uses: actions/upload-artifact@v4
+      with:
+        name: Windows-Login-Helper
+        path: dist/Windows-Login-Helper/
+
+    - name: Install Inno Setup
+      run: |
+        choco install innosetup
+        echo 'Installed Inno Setup successfully.'
+
+    - name: Create Installer
+      run: |
+        ISCC.exe Installer/WindowsLoginHelper.iss
+        mv -Path "Installer/WindowsLoginHelper_Setup.exe" -Destination "release/" -Force
+
+    - name: Upload Installer to GitHub Actions
+      uses: actions/upload-artifact@v4
+      with:
+        name: WindowsLoginHelper_Installer
+        path: release/WindowsLoginHelper_Setup.exe
+
+    - name: Calculate checksums
+      run: |
+        ls release -Recurse -Force
+        pwsh .github/workflows/generate-sha256.ps1 release/
+
+    - name: Create Release
+      uses: ncipollo/release-action@v1
+      with:
+        artifacts: |
+          release/*.zip
+          release/*.exe
+        draft: true
+        bodyFile: release/checksums.md
+        token: ${{ secrets.GITHUB_TOKEN }}
+        tag: ${{ github.ref_name }}
+        allowUpdates: true
+        omitBodyDuringUpdate: true
+        omitNameDuringUpdate: true
