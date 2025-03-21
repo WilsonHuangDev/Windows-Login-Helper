@@ -24,7 +24,7 @@ jobs:
     - name: Build EXE
       run: |
         rm dist -Recurse -Force -ErrorAction Continue
-        pyinstaller --noconfirm --clean --multiprocessing-fork Installer/Pyinstaller.spec
+        pyinstaller --noconfirm --clean pyinstaller.spec
 
     - name: Upload EXE to GitHub Actions
       uses: actions/upload-artifact@v4
