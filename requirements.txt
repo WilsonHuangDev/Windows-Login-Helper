@@ -1,3 +1,4 @@
 wxPython
 datetime
 configparser
+cx_Freeze
