@@ -1,5 +1,6 @@
 import wx
 import datetime
+
 from modules.config_manager import ConfigManager
 from modules.passwd_generator import PasswordGenerator
 from modules.cmd_executor import CommandExecutor

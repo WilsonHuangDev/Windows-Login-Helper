@@ -2,6 +2,7 @@ import configparser
 import datetime
 import os
 
+from modules.config_manager import ConfigManager
 from modules.debug_window import DebugLogger
 
 

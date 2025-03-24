@@ -1,3 +1,5 @@
+import subprocess
+
 from modules.debug_window import DebugLogger
 
 

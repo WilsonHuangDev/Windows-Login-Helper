@@ -1,6 +1,7 @@
 import os
 import configparser
 import ctypes
+
 from modules.debug_window import DebugLogger
 
 
