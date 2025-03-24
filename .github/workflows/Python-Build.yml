@@ -24,7 +24,7 @@ jobs:
     - name: Build EXE
       run: |
         rm build -Recurse -Force -ErrorAction Continue
-        python setup.py build
+        "C:/Program Files/Git/bin/bash.exe" -i ./nuitka.sh
 
     - name: Upload EXE to GitHub Actions
       uses: actions/upload-artifact@v4

@@ -1,4 +1,4 @@
 wxPython
 datetime
 configparser
-cx_Freeze
+nuitka
