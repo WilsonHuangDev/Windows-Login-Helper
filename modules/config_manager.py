@@ -1,4 +1,5 @@
 import os
+import sys
 import configparser
 import ctypes
 
@@ -6,7 +7,22 @@ from modules.debug_window import DebugLogger
 
 
 class ConfigManager:
-    CONFIG_PATH = os.path.join(os.environ['WINDIR'], 'passwd_changer_config.ini')
+    # 动态配置文件路径
+    @staticmethod
+    def _get_config_path():
+        """根据运行模式返回配置文件路径"""
+        # 检测是否为打包后的 EXE
+        if getattr(sys, 'frozen', False):
+            # EXE 模式：配置文件在软件所在目录
+            base_dir = os.path.dirname(sys.executable)
+        else:
+            # PY 模式：配置文件在系统盘根目录
+            base_dir = os.environ.get('SYSTEMDRIVE', 'C:') + '\\'
+
+        return os.path.join(base_dir, 'passwd_changer_config.ini')
+
+    CONFIG_PATH = _get_config_path.__func__()  # 动态获取路径
+
     DEFAULT_CONFIG = {
         'Auth': {
             'auth_mode': '0',

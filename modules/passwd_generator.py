@@ -1,13 +1,27 @@
 import configparser
 import datetime
 import os
+import sys
 
 from modules.config_manager import ConfigManager
 from modules.debug_window import DebugLogger
 
 
 class PasswordGenerator:
-    KEY_FILE = os.path.join(os.environ['WINDIR'], 'passwd_key_map.ini')
+    # 动态密钥文件路径
+    @staticmethod
+    def _get_key_path():
+        """根据运行模式返回密钥文件路径"""
+        if getattr(sys, 'frozen', False):
+            # EXE 模式：密钥文件在软件所在目录
+            base_dir = os.path.dirname(sys.executable)
+        else:
+            # PY 模式：密钥文件在系统盘根目录
+            base_dir = os.environ.get('SYSTEMDRIVE', 'C:') + '\\'
+
+        return os.path.join(base_dir, 'passwd_key_map.ini')
+
+    KEY_FILE = _get_key_path.__func__()  # 动态获取路径
 
     @classmethod
     def _load_key_map(cls):
