@@ -19,7 +19,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        python -m pip install -r requirements.txt
 
     - name: Build EXE
       run: |
@@ -39,6 +39,7 @@ jobs:
     - name: Create Installer
       run: |
         ISCC.exe Installer/WindowsLoginHelper.iss
+        mkdir ./release
         mv -Path "Installer/WindowsLoginHelper_Setup.exe" -Destination "release/" -Force
 
     - name: Upload Installer to GitHub Actions
