@@ -22,9 +22,9 @@ jobs:
         python -m pip install -r requirements.txt
 
     - name: Build EXE
+      shell: bash {0}
       run: |
         ./nuitka-build.sh
-      shell: "C:/Program Files/Git/bin/bash.exe" -c ". '{0}'"
 
     - name: Upload EXE to GitHub Actions
       uses: actions/upload-artifact@v4
