@@ -18,7 +18,6 @@ python -m nuitka \
 --output-filename=WinLoginHelper \
 --remove-output \
 --show-progress \
---show-memory \
 --assume-yes-for-downloads \
 ./main.py
 

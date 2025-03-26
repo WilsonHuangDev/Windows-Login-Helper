@@ -23,7 +23,8 @@ jobs:
 
     - name: Build EXE
       run: |
-        start "C:/Program Files/Git/bin/bash.exe" -NoNewWindow -ArgumentList "./nuitka-build.sh"
+        ./nuitka-build.sh
+      shell: "C:/Program Files/Git/bin/bash.exe" -c ". '{0}'"
 
     - name: Upload EXE to GitHub Actions
       uses: actions/upload-artifact@v4
