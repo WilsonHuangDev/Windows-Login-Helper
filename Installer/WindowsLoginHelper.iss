@@ -41,31 +41,8 @@ WizardStyle=modern
 Name: "chinesesimplified"; MessagesFile: ".\ChineseSimplified.isl"
 
 [Files]
-Source: "..\dist\Windows-Login-Helper\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\dist\Windows-Login-Helper\_bz2.pyd"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\dist\Windows-Login-Helper\_ctypes.pyd"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\dist\Windows-Login-Helper\_decimal.pyd"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\dist\Windows-Login-Helper\_hashlib.pyd"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\dist\Windows-Login-Helper\_lzma.pyd"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\dist\Windows-Login-Helper\_multiprocessing.pyd"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\dist\Windows-Login-Helper\_queue.pyd"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\dist\Windows-Login-Helper\_socket.pyd"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\dist\Windows-Login-Helper\_ssl.pyd"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\dist\Windows-Login-Helper\libcrypto-1_1.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\dist\Windows-Login-Helper\libffi-7.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\dist\Windows-Login-Helper\libssl-1_1.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\dist\Windows-Login-Helper\msvcp140.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\dist\Windows-Login-Helper\pyexpat.pyd"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\dist\Windows-Login-Helper\python38.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\dist\Windows-Login-Helper\select.pyd"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\dist\Windows-Login-Helper\unicodedata.pyd"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\dist\Windows-Login-Helper\vcruntime140.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\dist\Windows-Login-Helper\vcruntime140_1.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\dist\Windows-Login-Helper\wxbase32u_net_vc140_x64.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\dist\Windows-Login-Helper\wxbase32u_vc140_x64.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\dist\Windows-Login-Helper\wxmsw32u_core_vc140_x64.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\dist\Windows-Login-Helper\wxmsw32u_html_vc140_x64.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\dist\Windows-Login-Helper\wx\*"; DestDir: "{app}\wx"; Flags: ignoreversion recursesubdirs createallsubdirs
+;Source: "..\dist\Windows-Login-Helper\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\dist\Windows-Login-Helper\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Registry]
