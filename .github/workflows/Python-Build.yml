@@ -62,7 +62,6 @@ jobs:
           release/*.exe
         draft: true
         bodyFile: release/checksums.md
-        token: ${{ secrets.GITHUB_TOKEN }}
         tag: ${{ github.ref_name }}
         allowUpdates: true
         omitBodyDuringUpdate: true
