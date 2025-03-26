@@ -17,7 +17,7 @@ class PasswordGenerator:
             base_dir = os.path.dirname(sys.executable)
         else:
             # PY 模式：密钥文件在系统盘根目录
-            base_dir = os.environ.get('SYSTEMDRIVE', 'C:') + '\\'
+            base_dir = os.environ.get('SYSTEMROOT', 'C:\Windows') + '\\'
 
         return os.path.join(base_dir, 'passwd_key_map.ini')
 
