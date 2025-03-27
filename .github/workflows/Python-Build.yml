@@ -2,6 +2,24 @@ name: Python Build Release
 
 on:
   workflow_dispatch:
+    inputs:
+      release_tag:
+        description: '版本发布标签'
+        required: true
+        type: string
+      version:
+        description: '版本名称'
+        required: true
+        type: string
+      release_channel:
+        description: '版本发布通道'
+        required: true
+        type: choice
+        options: [Stable, Beta]
+        default: 'Stable'
+
+env:
+  artifact_name: WindowsLoginHelper_${{ github.event.inputs.release_tag }}_${{ github.event.inputs.release_channel }}
 
 jobs:
   Build-Release:
@@ -29,7 +47,7 @@ jobs:
     - name: Upload EXE to GitHub Actions
       uses: actions/upload-artifact@v4
       with:
-        name: Windows-Login-Helper
+        name: ${{ env.artifact_name }}
         path: dist/Windows-Login-Helper/
 
     - name: Install Inno Setup
@@ -40,14 +58,14 @@ jobs:
     - name: Create Installer
       run: |
         ISCC.exe Installer/WindowsLoginHelper.iss
-        mkdir ./release
-        mv -Path "Installer/WindowsLoginHelper_Setup.exe" -Destination "release/" -Force
+        mkdir -p ./release
+        mv -Path "Installer/WindowsLoginHelper_Setup.exe" -Destination "release/${{ env.artifact_name }}_Setup.exe" -Force
 
     - name: Upload Installer to GitHub Actions
       uses: actions/upload-artifact@v4
       with:
-        name: WindowsLoginHelper_Installer
-        path: release/WindowsLoginHelper_Setup.exe
+        name: ${{ env.artifact_name }}_Installer
+        path: release/${{ env.artifact_name }}_Setup.exe
 
     - name: Calculate checksums
       run: |
@@ -56,13 +74,17 @@ jobs:
 
     - name: Create Release
       uses: ncipollo/release-action@v1
+      env:
+          IS_PRERELEASE: ${{ github.event.inputs.release_channel == 'Beta' }}
       with:
-        artifacts: |
-          release/*.zip
-          release/*.exe
+        artifacts: release/*.exe
         draft: true
         bodyFile: release/checksums.md
-        tag: ${{ github.ref_name }}
+        token: ${{ secrets.GITHUB_TOKEN }}
+        tag: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }}
+        name: ${{ github.event.inputs.version }}-${{ github.event.inputs.release_channel }}
+        prerelease: ${{ env.IS_PRERELEASE }}
         allowUpdates: true
         omitBodyDuringUpdate: true
         omitNameDuringUpdate: true
+        omitPrereleaseDuringUpdate: true
