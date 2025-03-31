@@ -29,6 +29,7 @@ UninstallDisplayIcon={app}\{#MyAppExeName}
 ;ArchitecturesInstallIn64BitMode=x64compatible
 DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes
+CreateUninstallRegKey=no
 ;InfoBeforeFile=
 ; Uncomment the following line to run in non administrative install mode (install for current user only).
 ;PrivilegesRequired=lowest
