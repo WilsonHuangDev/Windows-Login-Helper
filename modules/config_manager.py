@@ -7,10 +7,9 @@ from modules.debug_window import DebugLogger
 
 
 class ConfigManager:
-    # 动态配置文件路径
     @staticmethod
-    def _get_config_path():
-        """根据运行模式返回配置文件路径"""
+    def _get_dir_path():
+        """根据运行模式返回配置文件所在目录"""
         # 检测是否为打包后的 EXE
         if getattr(sys, 'frozen', False):
             # EXE模式：配置文件在软件所在目录
@@ -19,11 +18,27 @@ class ConfigManager:
             # PY模式：配置文件在系统盘的Windows\WindowsLoginHelper目录
             system_root = os.environ.get('SYSTEMROOT', 'C:\\Windows')
             base_dir = os.path.join(system_root, 'WindowsLoginHelper')
-            os.makedirs(base_dir, exist_ok=True)  # 确保目录存在
+            DebugLogger.log("使用内核对象创建目录")
+            if not ctypes.windll.kernel32.CreateDirectoryW(base_dir, None):
+                error_code = ctypes.windll.kernel32.GetLastError()
+                if error_code != 183:  # 忽略已存在错误
+                    ctypes.windll.user32.MessageBoxW(0, f"目录创建失败!\n错误代码：{error_code}", "错误", 0x10)
+                    sys.exit(1)
 
-        return os.path.join(base_dir, 'passwd_changer_config.ini')
+        return base_dir
 
-    CONFIG_PATH = _get_config_path.__func__()  # 动态获取路径
+    @staticmethod
+    def _get_config_path():
+        # 通过_get_dir_path获取基础目录
+        config_dir = ConfigManager._get_dir_path()
+
+        # 拼接配置文件名
+        config_name = 'passwd_changer_config.ini'
+        return os.path.join(config_dir, config_name)  # 返回完整路径
+
+    @classmethod
+    def get_config_path(cls):
+        return cls._get_config_path()
 
     DEFAULT_CONFIG = {
         'Auth': {
@@ -39,11 +54,11 @@ class ConfigManager:
     def get_config(cls):
         """获取配置信息"""
         config = configparser.ConfigParser()
-        if not os.path.exists(cls.CONFIG_PATH):
+        if not os.path.exists(cls.get_config_path()):
             cls._create_default_config()
 
         try:
-            config.read(cls.CONFIG_PATH)
+            config.read(cls.get_config_path())
             return {
                 'auth_mode': int(config.get('Auth', 'auth_mode', fallback='0')),
                 'static_password': config.get('Auth', 'static_password', fallback=''),
@@ -59,7 +74,7 @@ class ConfigManager:
         try:
             config = configparser.ConfigParser()
             config.read_dict(cls.DEFAULT_CONFIG)
-            with open(cls.CONFIG_PATH, 'w') as f:
+            with open(cls.get_config_path(), 'w') as f:
                 config.write(f)
         except PermissionError:
             cls._show_error("需要管理员权限创建配置文件")

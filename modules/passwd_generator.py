@@ -1,39 +1,38 @@
 import configparser
 import datetime
 import os
-import sys
 
 from modules.config_manager import ConfigManager
 from modules.debug_window import DebugLogger
 
 
 class PasswordGenerator:
+    def __init__(self):
+        PasswordGenerator.KEY_FILE = self._get_key_path()  # 动态获取路径
+
     @staticmethod
     def _get_key_path():
-        """根据运行模式返回密钥文件路径"""
-        if getattr(sys, 'frozen', False):
-            # EXE模式：密钥文件在软件所在目录
-            base_dir = os.path.dirname(sys.executable)
-        else:
-            # PY模式：密钥文件在系统盘的Windows\WindowsLoginHelper目录
-            system_root = os.environ.get('SYSTEMROOT', 'C:\\Windows')
-            base_dir = os.path.join(system_root, 'WindowsLoginHelper')
-            os.makedirs(base_dir, exist_ok=True)  # 确保目录存在
+        # 通过_get_dir_path获取基础目录
+        config_dir = ConfigManager._get_dir_path()
 
-        return os.path.join(base_dir, 'passwd_key_map.ini')
+        # 拼接配置文件名
+        config_name = 'passwd_key_map.ini'
+        return os.path.join(config_dir, config_name)  # 返回完整路径
 
-    KEY_FILE = _get_key_path.__func__()  # 动态获取路径
+    @classmethod
+    def get_key_path(cls):
+        return cls._get_key_path()
 
     @classmethod
     def _load_key_map(cls):
         """加载密钥对照表"""
         key_map = {}
         try:
-            if not os.path.exists(cls.KEY_FILE):
+            if not os.path.exists(cls._get_key_path()):
                 cls._create_default_key_file()
 
             config = configparser.ConfigParser()
-            config.read(cls.KEY_FILE)
+            config.read(cls._get_key_path())
 
             if 'Keys' in config:
                 for key in config['Keys']:
@@ -70,16 +69,13 @@ class PasswordGenerator:
             "96": "I4", "97": "K4", "98": "M4", "99": "O4", "00": "S4"
         }
         try:
-            # 确保父目录存在
-            os.makedirs(os.path.dirname(cls.KEY_FILE), exist_ok=True)
-
             config = configparser.ConfigParser()
             config['Keys'] = default_keys
-            with open(cls.KEY_FILE, 'w') as f:
+            with open(cls._get_key_path(), 'w') as f:
                 config.write(f)
         except PermissionError:
             DebugLogger.log("权限不足，无法创建密钥文件")
-            ConfigManager._show_error("需要管理员权限创建密钥文件")
+            ConfigManager._show_error("需要管理员权限创建密钥表!")
         except Exception as e:
             DebugLogger.log(f"创建密钥表失败: {str(e)}")
             ConfigManager._show_error(f"创建密钥表失败: {str(e)}")
