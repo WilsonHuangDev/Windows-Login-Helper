@@ -53,8 +53,11 @@ class PasswordChanger(wx.Frame):
         panel.SetSizer(main_sizer)
 
     def on_return(self, event):
-        from modules.main_window import MainWindow
-        MainWindow().Show()
+        # 修改点3：直接获取主窗口并显示
+        app = wx.GetApp()
+        top_window = app.GetTopWindow()
+        if top_window:
+            top_window.Show()
         self.Close()
 
     def on_change(self, event):

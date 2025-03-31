@@ -77,12 +77,12 @@ class MainWindow(wx.Frame):
     def on_password(self, event):
         from PasswdChanger.passwd_changer import PasswordChanger
         PasswordChanger().Show()
-        self.Close()
+        self.Hide()  # 修改点1：隐藏主窗口而不是关闭
 
     def on_user_create(self, event):
         from PasswdChanger.user_creator import UserCreator
         UserCreator().Show()
-        self.Close()
+        self.Hide()  # 修改点2：隐藏主窗口而不是关闭
 
     def on_cmd(self, event):
         self.Hide()
