@@ -8,16 +8,17 @@ from modules.debug_window import DebugLogger
 
 
 class PasswordGenerator:
-    # 动态密钥文件路径
     @staticmethod
     def _get_key_path():
         """根据运行模式返回密钥文件路径"""
         if getattr(sys, 'frozen', False):
-            # EXE 模式：密钥文件在软件所在目录
+            # EXE模式：密钥文件在软件所在目录
             base_dir = os.path.dirname(sys.executable)
         else:
-            # PY 模式：密钥文件在系统盘根目录
-            base_dir = os.environ.get('SYSTEMROOT', 'C:\Windows') + '\\'
+            # PY模式：密钥文件在系统盘的Windows\WindowsLoginHelper目录
+            system_root = os.environ.get('SYSTEMROOT', 'C:\\Windows')
+            base_dir = os.path.join(system_root, 'WindowsLoginHelper')
+            os.makedirs(base_dir, exist_ok=True)  # 确保目录存在
 
         return os.path.join(base_dir, 'passwd_key_map.ini')
 
@@ -69,10 +70,16 @@ class PasswordGenerator:
             "96": "I4", "97": "K4", "98": "M4", "99": "O4", "00": "S4"
         }
         try:
+            # 确保父目录存在
+            os.makedirs(os.path.dirname(cls.KEY_FILE), exist_ok=True)
+
             config = configparser.ConfigParser()
             config['Keys'] = default_keys
             with open(cls.KEY_FILE, 'w') as f:
                 config.write(f)
+        except PermissionError:
+            DebugLogger.log("权限不足，无法创建密钥文件")
+            ConfigManager._show_error("需要管理员权限创建密钥文件")
         except Exception as e:
             DebugLogger.log(f"创建密钥表失败: {str(e)}")
             ConfigManager._show_error(f"创建密钥表失败: {str(e)}")

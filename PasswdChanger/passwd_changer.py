@@ -16,9 +16,10 @@ class SecurePasswordTextCtrl(wx.TextCtrl):
 
 
 class PasswordChanger(wx.Frame):
-    def __init__(self):
+    def __init__(self, parent=None):
         style = wx.CAPTION | wx.STAY_ON_TOP | wx.CLOSE_BOX
-        super().__init__(None, title="Windows 登录辅助工具", size=(400, 250), style=style)
+        super().__init__(parent, title="Windows 登录辅助工具", size=(400, 250), style=style)  # 修复点：传递parent给父类
+        self.parent = parent  # 保存父窗口引用
         self.init_ui()
         self.Center()
 
@@ -53,9 +54,9 @@ class PasswordChanger(wx.Frame):
         panel.SetSizer(main_sizer)
 
     def on_return(self, event):
-        from modules.main_window import MainWindow
-        MainWindow().Show()
-        self.Close()
+        if self.parent:  # 修改点4：直接使用保存的父窗口引用
+            self.parent.Show()
+        self.Destroy()  # 修改点5：销毁当前窗口
 
     def on_change(self, event):
         try:

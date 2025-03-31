@@ -13,11 +13,13 @@ class ConfigManager:
         """根据运行模式返回配置文件路径"""
         # 检测是否为打包后的 EXE
         if getattr(sys, 'frozen', False):
-            # EXE 模式：配置文件在软件所在目录
+            # EXE模式：配置文件在软件所在目录
             base_dir = os.path.dirname(sys.executable)
         else:
-            # PY 模式：配置文件在系统盘根目录
-            base_dir = os.environ.get('SYSTEMROOT', 'C:\Windows') + '\\'
+            # PY模式：配置文件在系统盘的Windows\WindowsLoginHelper目录
+            system_root = os.environ.get('SYSTEMROOT', 'C:\\Windows')
+            base_dir = os.path.join(system_root, 'WindowsLoginHelper')
+            os.makedirs(base_dir, exist_ok=True)  # 确保目录存在
 
         return os.path.join(base_dir, 'passwd_changer_config.ini')
 

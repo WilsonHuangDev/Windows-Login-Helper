@@ -3,7 +3,6 @@ import datetime
 
 from modules.config_manager import ConfigManager
 from modules.passwd_generator import PasswordGenerator
-from modules.cmd_executor import CommandExecutor
 from modules.debug_window import DebugLogger
 
 
@@ -11,6 +10,7 @@ class LoginWindow(wx.Frame):
     def __init__(self):
         style = wx.CAPTION | wx.STAY_ON_TOP | wx.CLOSE_BOX
         super().__init__(None, title="Windows 登录辅助工具", size=(380, 220), style=style)
+        self._app_ref = wx.GetApp()  # 修复点11：保持应用引用
         self._load_config()
         self.init_ui()
         self._init_timer()
@@ -158,6 +158,6 @@ class LoginWindow(wx.Frame):
         """直接跳过登录"""
         self._debug_print("跳过登录流程")
         from modules.main_window import MainWindow
-        main_win = MainWindow()
-        main_win.Show()
+        self.main_win = MainWindow()  # 保持主窗口引用
+        self.main_win.Show()
         self.Hide()
