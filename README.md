@@ -1,6 +1,6 @@
 <div align="center">
 
-# <image src="Assets/icon-pic.png" height="45"/> Windows 登录辅助工具
+# <image src="Assets/icon-pic.png" height="32"/> Windows 登录辅助工具
 
 ### Windows-Login-Helper
 
@@ -10,15 +10,27 @@
 
 <br>
 
-![软件截图 主界面](Assets/app-image1.png)
+![软件截图 口令认证界面](Assets/app-image1.png)
+<br>
+口令认证界面
+
+<br>
+
+![软件截图 主界面](Assets/app-image2.png)
 <br>
 主界面
 
 <br>
 
-![软件截图 输出窗口](Assets/app-image2.png)
+![软件截图 修改用户密码界面](Assets/app-image3.png)
 <br>
-输出窗口
+修改用户密码界面
+
+<br>
+
+![软件截图 创建用户界面](Assets/app-image4.png)
+<br>
+创建用户界面
 
 </div>
 
