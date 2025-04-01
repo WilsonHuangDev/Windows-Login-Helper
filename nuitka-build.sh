@@ -12,7 +12,7 @@ rm -rf ./dist 2> /dev/null
 python -m nuitka \
 --standalone \
 --windows-console-mode=disable \
---windows-icon=./Assets/icon.ico \
+--windows-icon-from-ico=./Assets/icon.ico \
 --include-package=PasswdChanger \
 --include-package=modules \
 --output-dir=./dist/Windows-Login-Helper \
