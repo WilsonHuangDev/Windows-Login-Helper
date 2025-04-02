@@ -11,7 +11,7 @@ from modules.config_manager import ConfigManager
 class MainWindow(wx.Frame):
     def __init__(self):
         style = wx.CAPTION | wx.STAY_ON_TOP | wx.CLOSE_BOX
-        super().__init__(None, title="Windows 登录辅助工具", size=(250, 380), style=style)
+        super().__init__(None, title="Windows 登录辅助工具", size=(250, 400), style=style)
         # 新增实例引用保持
         self._main_window_instance = self
         self.init_ui()
@@ -26,7 +26,7 @@ class MainWindow(wx.Frame):
         # 按钮区
         btn_sizer = wx.FlexGridSizer(rows=4, cols=1, vgap=15, hgap=30)
         btn_pass = wx.Button(panel, label="修改用户密码", size=(130, 40))
-        btn_user = wx.Button(panel, label="创建新用户", size=(130, 40))
+        btn_user = wx.Button(panel, label="创建用户", size=(130, 40))
         btn_cmd = wx.Button(panel, label="CMD 命令行", size=(130, 40))
         self.btn_exit = wx.Button(panel, label="退出登录", size=(130, 40))
 
@@ -37,12 +37,20 @@ class MainWindow(wx.Frame):
 
         self._update_button_state()
 
+        tooltip_text = wx.StaticText(panel, label="请选择功能", style=wx.ALIGN_CENTER)
+        text_font = tooltip_text.GetFont()
+        text_font.SetPointSize(12)  # 设置字体大小为12
+        text_font.SetWeight(wx.FONTWEIGHT_BOLD)  # 设置字体为粗体
+        tooltip_text.SetFont(text_font)
+
         # 时间显示
         self.time_display = wx.StaticText(panel, label="", style=wx.ALIGN_CENTER)
 
         main_sizer.AddStretchSpacer(1)
-        main_sizer.Add(btn_sizer, 0, wx.ALIGN_CENTER)
+        main_sizer.Add(tooltip_text, 0, wx.ALIGN_CENTER)
         main_sizer.AddStretchSpacer(1)
+        main_sizer.Add(btn_sizer, 0, wx.ALIGN_CENTER)
+        main_sizer.AddStretchSpacer(2)
         main_sizer.Add(self.time_display, 0, wx.ALIGN_CENTER | wx.BOTTOM, 10)
 
         panel.SetSizer(main_sizer)
