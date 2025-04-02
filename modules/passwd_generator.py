@@ -7,9 +7,6 @@ from modules.debug_window import DebugLogger
 
 
 class PasswordGenerator:
-    def __init__(self):
-        PasswordGenerator.KEY_FILE = self._get_key_path()  # 动态获取路径
-
     @staticmethod
     def _get_key_path():
         # 通过_get_dir_path获取基础目录
@@ -18,10 +15,6 @@ class PasswordGenerator:
         # 拼接配置文件名
         config_name = 'passwd_key_map.ini'
         return os.path.join(config_dir, config_name)  # 返回完整路径
-
-    @classmethod
-    def get_key_path(cls):
-        return cls._get_key_path()
 
     @classmethod
     def _load_key_map(cls):

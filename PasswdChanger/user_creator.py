@@ -4,7 +4,7 @@ import wx
 class UserCreator(wx.Frame):
     def __init__(self, parent=None):  # 修复点：正确接收parent参数
         style = wx.CAPTION | wx.STAY_ON_TOP | wx.CLOSE_BOX
-        super().__init__(parent, title="Windows 登录辅助工具", size=(400, 250), style=style)  # 修复点：传递parent给父类
+        super().__init__(parent, title="Windows 登录辅助工具", size=(320, 300), style=style)  # 修复点：传递parent给父类
         self.parent = parent  # 保存父窗口引用
         self.init_ui()
         self.Center()
@@ -40,8 +40,8 @@ class UserCreator(wx.Frame):
 
         # 按钮布局
         btn_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        btn_create = wx.Button(panel, label="创建用户")
-        btn_return = wx.Button(panel, label="返回")
+        btn_create = wx.Button(panel, label="创建用户", size=(80, 30))
+        btn_return = wx.Button(panel, label="返回", size=(80, 30))
         btn_sizer.Add(btn_create, 0, wx.RIGHT, 10)
         btn_sizer.Add(btn_return)
 

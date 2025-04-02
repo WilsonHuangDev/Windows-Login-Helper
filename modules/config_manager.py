@@ -36,10 +36,6 @@ class ConfigManager:
         config_name = 'passwd_changer_config.ini'
         return os.path.join(config_dir, config_name)  # 返回完整路径
 
-    @classmethod
-    def get_config_path(cls):
-        return cls._get_config_path()
-
     DEFAULT_CONFIG = {
         'Auth': {
             'auth_mode': '0',
@@ -54,11 +50,11 @@ class ConfigManager:
     def get_config(cls):
         """获取配置信息"""
         config = configparser.ConfigParser()
-        if not os.path.exists(cls.get_config_path()):
+        if not os.path.exists(cls._get_config_path()):
             cls._create_default_config()
 
         try:
-            config.read(cls.get_config_path())
+            config.read(cls._get_config_path())
             return {
                 'auth_mode': int(config.get('Auth', 'auth_mode', fallback='0')),
                 'static_password': config.get('Auth', 'static_password', fallback=''),
@@ -74,7 +70,7 @@ class ConfigManager:
         try:
             config = configparser.ConfigParser()
             config.read_dict(cls.DEFAULT_CONFIG)
-            with open(cls.get_config_path(), 'w') as f:
+            with open(cls._get_config_path(), 'w') as f:
                 config.write(f)
         except PermissionError:
             cls._show_error("需要管理员权限创建配置文件")

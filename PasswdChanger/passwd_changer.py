@@ -18,7 +18,7 @@ class SecurePasswordTextCtrl(wx.TextCtrl):
 class PasswordChanger(wx.Frame):
     def __init__(self, parent=None):
         style = wx.CAPTION | wx.STAY_ON_TOP | wx.CLOSE_BOX
-        super().__init__(parent, title="Windows 登录辅助工具", size=(400, 250), style=style)  # 修复点：传递parent给父类
+        super().__init__(parent, title="Windows 登录辅助工具", size=(320, 270), style=style)  # 修复点：传递parent给父类
         self.parent = parent  # 保存父窗口引用
         self.init_ui()
         self.Center()
@@ -40,8 +40,8 @@ class PasswordChanger(wx.Frame):
         grid.Add(self.confirm_pass, 0, wx.EXPAND)
 
         btn_box = wx.BoxSizer(wx.HORIZONTAL)
-        btn_change = wx.Button(panel, label="修改密码")
-        btn_return = wx.Button(panel, label="返回")
+        btn_change = wx.Button(panel, label="确认修改", size=(80, 30))
+        btn_return = wx.Button(panel, label="返回", size=(80, 30))
         btn_change.Bind(wx.EVT_BUTTON, self.on_change)
         btn_return.Bind(wx.EVT_BUTTON, self.on_return)
         btn_box.Add(btn_change, 0, wx.RIGHT, 10)

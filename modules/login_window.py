@@ -9,7 +9,7 @@ from modules.debug_window import DebugLogger
 class LoginWindow(wx.Frame):
     def __init__(self):
         style = wx.CAPTION | wx.STAY_ON_TOP | wx.CLOSE_BOX
-        super().__init__(None, title="Windows 登录辅助工具", size=(380, 220), style=style)
+        super().__init__(None, title="Windows 登录辅助工具", size=(360, 200), style=style)
         self._app_ref = wx.GetApp()  # 修复点11：保持应用引用
         self._load_config()
         self.init_ui()
