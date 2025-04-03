@@ -44,8 +44,9 @@ class DebugLogger:
 class DebugWindow(wx.Frame):
     def __init__(self, queue):
         style = wx.CAPTION | wx.STAY_ON_TOP | wx.CLOSE_BOX
-        super().__init__(None, title="调试信息", size=(600, 400), style=style)
+        super().__init__(None, title="调试信息输出", size=(600, 400), style=style)
         self.queue = queue
+        self.SetIcon(wx.Icon("Assets/icon.ico"))  # 设置窗口图标
         self.init_ui()
         self.timer = wx.Timer(self)
         self.Bind(wx.EVT_TIMER, self.update_logs, self.timer)

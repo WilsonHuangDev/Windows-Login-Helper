@@ -14,6 +14,7 @@ class MainWindow(wx.Frame):
         super().__init__(None, title="Windows 登录辅助工具", size=(250, 400), style=style)
         # 新增实例引用保持
         self._main_window_instance = self
+        self.SetIcon(wx.Icon("Assets/icon.ico"))  # 设置窗口图标
         self.init_ui()
         self._init_timer()
         self.Center()

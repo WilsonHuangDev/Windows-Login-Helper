@@ -11,6 +11,7 @@ class LoginWindow(wx.Frame):
         style = wx.CAPTION | wx.STAY_ON_TOP | wx.CLOSE_BOX
         super().__init__(None, title="Windows 登录辅助工具", size=(360, 200), style=style)
         self._app_ref = wx.GetApp()  # 修复点11：保持应用引用
+        self.SetIcon(wx.Icon("Assets/icon.ico"))  # 设置窗口图标
         self._load_config()
         self.init_ui()
         self._init_timer()

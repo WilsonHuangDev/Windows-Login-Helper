@@ -6,6 +6,7 @@ class UserCreator(wx.Frame):
         style = wx.CAPTION | wx.STAY_ON_TOP | wx.CLOSE_BOX
         super().__init__(parent, title="Windows 登录辅助工具", size=(320, 280), style=style)  # 修复点：传递parent给父类
         self.parent = parent  # 保存父窗口引用
+        self.SetIcon(wx.Icon("Assets/icon.ico"))  # 设置窗口图标
         self.init_ui()
         self.Center()
 
