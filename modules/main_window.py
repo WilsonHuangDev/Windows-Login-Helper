@@ -25,15 +25,17 @@ class MainWindow(wx.Frame):
         main_sizer = wx.BoxSizer(wx.VERTICAL)
 
         # 按钮区
-        btn_sizer = wx.FlexGridSizer(rows=4, cols=1, vgap=15, hgap=30)
+        btn_sizer = wx.FlexGridSizer(rows=5, cols=1, vgap=15, hgap=30)
         btn_pass = wx.Button(panel, label="修改用户密码", size=(130, 40))
         btn_user = wx.Button(panel, label="创建用户", size=(130, 40))
         btn_cmd = wx.Button(panel, label="CMD 命令行", size=(130, 40))
+        btn_power = wx.Button(panel, label="电源选项", size=(130, 40))
         self.btn_exit = wx.Button(panel, label="退出登录", size=(130, 40))
 
         btn_sizer.Add(btn_pass, flag=wx.EXPAND)
         btn_sizer.Add(btn_user, flag=wx.EXPAND)
         btn_sizer.Add(btn_cmd, flag=wx.EXPAND)
+        btn_sizer.Add(btn_power, flag=wx.EXPAND)
         btn_sizer.Add(self.btn_exit, flag=wx.EXPAND)
 
         self._update_button_state()
@@ -59,6 +61,7 @@ class MainWindow(wx.Frame):
         btn_pass.Bind(wx.EVT_BUTTON, self.on_password)
         btn_user.Bind(wx.EVT_BUTTON, self.on_user_create)
         btn_cmd.Bind(wx.EVT_BUTTON, self.on_cmd)
+        btn_power.Bind(wx.EVT_BUTTON, self.on_power_options)
         self.btn_exit.Bind(wx.EVT_BUTTON, self.on_exit)
 
     def _init_timer(self):
@@ -80,6 +83,11 @@ class MainWindow(wx.Frame):
     def on_user_create(self, event):
         from PasswdChanger.user_creator import UserCreator
         UserCreator(parent=self).Show()  # 修复点10：传递有效parent
+        self.Hide()
+
+    def on_power_options(self, event):
+        from modules.power_options import PowerOptionsWindow
+        PowerOptionsWindow(parent=self).Show()  # 传递有效parent
         self.Hide()
 
     def on_cmd(self, event):
