@@ -1,16 +1,20 @@
 import wx
 import ctypes
 import platform
+
 from ctypes import wintypes
+from modules.debug_window import DebugLogger
+
 
 class PowerOptionsWindow(wx.Frame):
     def __init__(self, parent=None):
         style = wx.CAPTION | wx.STAY_ON_TOP | wx.CLOSE_BOX
-        super().__init__(parent, title="电源选项", size=(250, 360), style=style)
+        super().__init__(parent, title="Windows 登录辅助工具", size=(250, 360), style=style)
         self.parent = parent  # 保存父窗口引用
         self.SetIcon(wx.Icon("Assets/icon.ico"))  # 设置窗口图标
         self.init_ui()
         self.Center()
+        DebugLogger.log("[DEBUG] 电源选项窗口初始化完成")
         
     def init_ui(self):
         panel = wx.Panel(self)
@@ -50,12 +54,14 @@ class PowerOptionsWindow(wx.Frame):
         btn_reboot.Bind(wx.EVT_BUTTON, self.on_reboot)
         self.btn_sleep.Bind(wx.EVT_BUTTON, self.on_sleep)
         self.btn_hibernate.Bind(wx.EVT_BUTTON, self.on_hibernate)
-        btn_back.Bind(wx.EVT_BUTTON, self.on_back)
+        btn_back.Bind(wx.EVT_BUTTON, self.on_return)
 
     # Windows API相关操作
     def _execute_power_action(self, action):
         try:
             if platform.system() != "Windows":
+                DebugLogger.log("操作失败: 仅支持Windows系统")
+                wx.MessageBox("仅支持 Windows 系统!", "错误", wx.OK | wx.ICON_ERROR)
                 raise NotImplementedError("仅支持Windows系统")
 
             # 获取必要函数
@@ -100,15 +106,20 @@ class PowerOptionsWindow(wx.Frame):
 
             # 执行电源操作
             if action == "shutdown":
+                DebugLogger.log("[DEBUG] 即将执行关机操作")
                 ctypes.windll.user32.ExitWindowsEx(0x00000008, 0x00000000)
             elif action == "reboot":
+                DebugLogger.log("[DEBUG] 即将执行重启操作")
                 ctypes.windll.user32.ExitWindowsEx(0x00000002 | 0x00000004, 0)
             elif action == "sleep":
+                DebugLogger.log("[DEBUG] 即将执行睡眠操作")
                 ctypes.windll.powrprof.SetSuspendState(False, False, False)
             elif action == "hibernate":
+                DebugLogger.log("[DEBUG] 即将执行休眠操作")
                 ctypes.windll.powrprof.SetSuspendState(True, False, False)
 
         except Exception as e:
+            DebugLogger.log(f"操作失败: {str(e)}")
             wx.MessageBox(f"操作失败: {str(e)}", "错误", wx.OK | wx.ICON_ERROR)
         finally:
             ctypes.windll.kernel32.CloseHandle(hToken)
@@ -125,7 +136,7 @@ class PowerOptionsWindow(wx.Frame):
     def on_hibernate(self, event):
         self._execute_power_action("hibernate")
 
-    def on_back(self, event):
+    def on_return(self, event):
         if self.parent:
             self.parent.restore_main_window()
 
@@ -134,3 +145,4 @@ class PowerOptionsWindow(wx.Frame):
     def _update_button_state(self):
         """根据系统电源选项状态更新按钮状态"""
         self.btn_hibernate.Enable()
+        DebugLogger.log("[DEBUG] 成功更新按钮状态")

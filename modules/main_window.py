@@ -4,7 +4,6 @@ import threading
 import wx
 
 from modules.debug_window import DebugLogger
-from modules.cmd_executor import CommandExecutor
 from modules.config_manager import ConfigManager
 
 
@@ -18,7 +17,7 @@ class MainWindow(wx.Frame):
         self.init_ui()
         self._init_timer()
         self.Center()
-        DebugLogger.log("主窗口初始化完成")
+        DebugLogger.log("[DEBUG] 主窗口初始化完成")
 
     def init_ui(self):
         panel = wx.Panel(self)
@@ -68,8 +67,9 @@ class MainWindow(wx.Frame):
         # 初始化时间显示定时器
         self.timer = wx.Timer(self)
         self.Bind(wx.EVT_TIMER, self._update_time_display, self.timer)
-        self.timer.Start(10)
+        self.timer.Start(5)
         self._update_time_display(None)  # 立即更新一次
+        DebugLogger.log("[DEBUG] 时间显示定时器初始化完成")
 
     def _update_time_display(self, event):
         current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -77,18 +77,21 @@ class MainWindow(wx.Frame):
 
     def on_password(self, event):
         from PasswdChanger.passwd_changer import PasswordChanger
-        PasswordChanger(parent=self).Show()  # 修复点9：传递有效parent
+        PasswordChanger(parent=self).Show()  # 传递有效parent
         self.Hide()
+        DebugLogger.log("[DEBUG] 成功开启用户密码修改窗口并隐藏主窗口")
 
     def on_user_create(self, event):
         from PasswdChanger.user_creator import UserCreator
-        UserCreator(parent=self).Show()  # 修复点10：传递有效parent
+        UserCreator(parent=self).Show()  # 传递有效parent
         self.Hide()
+        DebugLogger.log("[DEBUG] 成功开启用户创建窗口并隐藏主窗口")
 
     def on_power_options(self, event):
         from modules.power_options import PowerOptionsWindow
         PowerOptionsWindow(parent=self).Show()  # 传递有效parent
         self.Hide()
+        DebugLogger.log("[DEBUG] 成功开启电源选项窗口并隐藏主窗口")
 
     def on_cmd(self, event):
         self.Hide()
@@ -96,8 +99,7 @@ class MainWindow(wx.Frame):
 
     def run_cmd_window(self):
         try:
-            if CommandExecutor.DEBUG_MODE:
-                DebugLogger.log("[DEBUG] 正在启动CMD进程")  # 修改这里
+            DebugLogger.log("[DEBUG] 正在启动CMD进程")
 
             process = subprocess.Popen(
                 "start cmd",
@@ -107,6 +109,7 @@ class MainWindow(wx.Frame):
             process.wait()
         except Exception as e:
             DebugLogger.log(f"CMD进程启动失败: {str(e)}")
+            wx.MessageBox(f"CMD进程启动失败!\n{str(e)}", "错误", wx.OK | wx.ICON_ERROR)
         finally:
             wx.CallAfter(self.restore_main_window)
 
@@ -114,23 +117,26 @@ class MainWindow(wx.Frame):
         if not self.IsShown():
             self.Show()
             self.Raise()
+            DebugLogger.log("[DEBUG] 成功恢复主窗口")
 
     def _update_button_state(self):
         """根据认证模式更新按钮状态"""
         config = ConfigManager.get_config()
         auth_mode = config.get('auth_mode', 0)
         self.btn_exit.Enable(auth_mode != 0)
+        DebugLogger.log("[DEBUG] 成功更新按钮状态")
 
     def on_exit(self, event):
-        """安全退出到认证窗口"""
+        """安全退出至认证窗口"""
 
         def safe_exit():
             from modules.login_window import LoginWindow
             login_win = LoginWindow()
             login_win.Show()
-            self.Hide()  # 修复点7：销毁而不是关闭
+            self.Hide()
 
-        wx.CallAfter(safe_exit)  # 修复点8：确保在主线程执行
+        wx.CallAfter(safe_exit)  # 确保在主线程执行
+        DebugLogger.log("[DEBUG] 已安全退出")
 
 
 def run():

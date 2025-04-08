@@ -14,7 +14,9 @@ class PasswordGenerator:
 
         # 拼接配置文件名
         config_name = 'passwd_key_map.ini'
-        return os.path.join(config_dir, config_name)  # 返回完整路径
+        key_path = os.path.join(config_dir, config_name)  # 合并完整路径
+        DebugLogger.log(f"[DEBUG] 密钥表路径: {key_path}")
+        return key_path
 
     @classmethod
     def _load_key_map(cls):
@@ -22,6 +24,7 @@ class PasswordGenerator:
         key_map = {}
         try:
             if not os.path.exists(cls._get_key_path()):
+                DebugLogger.log("[DEBUG] 密钥表不存在")
                 cls._create_default_key_file()
 
             config = configparser.ConfigParser()
@@ -32,7 +35,6 @@ class PasswordGenerator:
                     key_map[key] = config['Keys'][key]
             return key_map
         except Exception as e:
-            DebugLogger.log(f"密钥表加载失败: {str(e)}")
             ConfigManager._show_error(f"密钥表加载失败: {str(e)}")
             return {}
 
@@ -66,22 +68,21 @@ class PasswordGenerator:
             config['Keys'] = default_keys
             with open(cls._get_key_path(), 'w') as f:
                 config.write(f)
+            DebugLogger.log("[DEBUG] 已自动创建密钥表文件")
         except PermissionError:
-            DebugLogger.log("权限不足，无法创建密钥文件")
             ConfigManager._show_error("需要管理员权限创建密钥表!")
         except Exception as e:
-            DebugLogger.log(f"创建密钥表失败: {str(e)}")
             ConfigManager._show_error(f"创建密钥表失败: {str(e)}")
 
     @classmethod
     def generate_dynamic_password(cls):
         """生成动态口令"""
-        # 加载密钥映射表并保存为类属性
-        cls.key_map = cls._load_key_map()  # 修复关键行
+        # 加载密钥表并保存为类属性
+        cls.key_map = cls._load_key_map()
         try:
             now = datetime.datetime.now()
             time_str = now.strftime("%d%m%Y%H%M")
-            offset = 2 if now.time() < datetime.time(12, 30) else 4
+            offset = 2 if now.time() <= datetime.time(12, 30) else 4
 
             encrypted = []
             for char in time_str:
@@ -95,6 +96,7 @@ class PasswordGenerator:
                 pair = encrypted_str[i:i + 2].ljust(2, "0")
                 password_part = cls.key_map.get(pair, None)  # 使用 cls.key_map
                 if not password_part:
+                    ConfigManager._show_error(f"无效的密钥对: {pair}")
                     raise ValueError(f"无效的密钥对: {pair}")
                 password_parts.append(password_part)
 
@@ -111,4 +113,5 @@ class PasswordGenerator:
 
             return "".join(letters + numbers)
         except Exception as e:
+            ConfigManager._show_error(f"生成动态口令失败: {str(e)}")
             raise ValueError(f"生成动态口令失败: {str(e)}")

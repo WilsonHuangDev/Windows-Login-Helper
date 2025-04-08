@@ -1,10 +1,11 @@
 import ctypes
 import sys
 import traceback
+import time
 
 import wx
 
-from modules import ConfigManager
+from modules.config_manager import ConfigManager
 from modules.debug_window import DebugLogger
 
 
@@ -26,13 +27,14 @@ class ProcessManager:
             )
 
             if ret <= 32:
-                print(f"提权失败，错误代码: {ret}")
+                print(f"提权失败: {ret}")
                 return False
 
             sys.exit(0)
         except Exception as e:
             print(f"权限请求失败: {str(e)}")
-            input("按回车退出...")
+            print("程序将在 10 秒后自动退出...")
+            time.sleep(10)
             sys.exit(1)
 
     @staticmethod
@@ -53,16 +55,21 @@ class ProcessManager:
             if config.get('auth_mode', 0) == 0:
                 from modules.main_window import MainWindow
                 frame = MainWindow()
+                DebugLogger.log("[DEBUG] 已创建主窗口")
             else:
                 from modules.login_window import LoginWindow
                 frame = LoginWindow()
+                DebugLogger.log("[DEBUG] 已创建认证窗口")
 
             frame.Show()
+            DebugLogger.log("[DEBUG] 显示窗口")
             app.MainLoop()
 
         except Exception as e:
             traceback.print_exc()
-            input("发生错误，按回车退出...")
+            print("程序将在 10 秒后自动退出...")
+            time.sleep(10)
+            sys.exit(1)
 
 
 if __name__ == "__main__":
