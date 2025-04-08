@@ -25,7 +25,7 @@ class MainWindow(wx.Frame):
         main_sizer = wx.BoxSizer(wx.VERTICAL)
 
         # 按钮区
-        btn_sizer = wx.FlexGridSizer(rows=5, cols=1, vgap=15, hgap=30)
+        btn_sizer = wx.FlexGridSizer(rows=5, cols=1, vgap=10, hgap=30)
         btn_pass = wx.Button(panel, label="修改用户密码", size=(130, 40))
         btn_user = wx.Button(panel, label="创建用户", size=(130, 40))
         btn_cmd = wx.Button(panel, label="CMD 命令行", size=(130, 40))

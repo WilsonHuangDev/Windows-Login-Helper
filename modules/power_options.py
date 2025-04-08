@@ -5,29 +5,52 @@ from ctypes import wintypes
 
 class PowerOptionsWindow(wx.Frame):
     def __init__(self, parent=None):
-        super().__init__(parent, title="电源选项", size=(250, 300))
-        self.parent = parent
+        style = wx.CAPTION | wx.STAY_ON_TOP | wx.CLOSE_BOX
+        super().__init__(parent, title="电源选项", size=(250, 360), style=style)
+        self.parent = parent  # 保存父窗口引用
+        self.SetIcon(wx.Icon("Assets/icon.ico"))  # 设置窗口图标
         self.init_ui()
         self.Center()
         
     def init_ui(self):
         panel = wx.Panel(self)
-        sizer = wx.BoxSizer(wx.VERTICAL)
+        main_sizer = wx.BoxSizer(wx.VERTICAL)
 
-        buttons = [
-            ("关机", self.on_shutdown),
-            ("重启", self.on_reboot),
-            ("睡眠", self.on_sleep),
-            ("休眠", self.on_hibernate),
-            ("返回", self.on_back)
-        ]
+        # 按钮区
+        btn_sizer = wx.FlexGridSizer(rows=5, cols=1, vgap=10, hgap=30)
+        btn_shutdown = wx.Button(panel, label="关机", size=(130, 40))
+        btn_reboot = wx.Button(panel, label="重启", size=(130, 40))
+        self.btn_sleep = wx.Button(panel, label="睡眠", size=(130, 40))
+        self.btn_hibernate = wx.Button(panel, label="休眠", size=(130, 40))
+        btn_back = wx.Button(panel, label="返回", size=(130, 40))
 
-        for label, handler in buttons:
-            btn = wx.Button(panel, label=label, size=(150, 40))
-            btn.Bind(wx.EVT_BUTTON, handler)
-            sizer.Add(btn, 0, wx.ALL | wx.EXPAND, 5)
+        btn_sizer.Add(btn_shutdown, flag=wx.EXPAND)
+        btn_sizer.Add(btn_reboot, flag=wx.EXPAND)
+        btn_sizer.Add(self.btn_sleep, flag=wx.EXPAND)
+        btn_sizer.Add(self.btn_hibernate, flag=wx.EXPAND)
+        btn_sizer.Add(btn_back, flag=wx.EXPAND)
 
-        panel.SetSizer(sizer)
+        self._update_button_state()
+
+        tooltip_text = wx.StaticText(panel, label="电源选项", style=wx.ALIGN_CENTER)
+        text_font = tooltip_text.GetFont()
+        text_font.SetPointSize(12)  # 设置字体大小为12
+        text_font.SetWeight(wx.FONTWEIGHT_BOLD)  # 设置字体为粗体
+        tooltip_text.SetFont(text_font)
+
+        main_sizer.AddStretchSpacer(1)
+        main_sizer.Add(tooltip_text, 0, wx.ALIGN_CENTER)
+        main_sizer.AddStretchSpacer(1)
+        main_sizer.Add(btn_sizer, 0, wx.ALIGN_CENTER)
+        main_sizer.AddStretchSpacer(2)
+
+        panel.SetSizer(main_sizer)
+
+        btn_shutdown.Bind(wx.EVT_BUTTON, self.on_shutdown)
+        btn_reboot.Bind(wx.EVT_BUTTON, self.on_reboot)
+        self.btn_sleep.Bind(wx.EVT_BUTTON, self.on_sleep)
+        self.btn_hibernate.Bind(wx.EVT_BUTTON, self.on_hibernate)
+        btn_back.Bind(wx.EVT_BUTTON, self.on_back)
 
     # Windows API相关操作
     def _execute_power_action(self, action):
@@ -103,6 +126,11 @@ class PowerOptionsWindow(wx.Frame):
         self._execute_power_action("hibernate")
 
     def on_back(self, event):
-        self.Hide()
         if self.parent:
             self.parent.restore_main_window()
+
+        self.Hide()
+
+    def _update_button_state(self):
+        """根据系统电源选项状态更新按钮状态"""
+        self.btn_hibernate.Enable()
