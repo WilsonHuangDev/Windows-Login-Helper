@@ -87,21 +87,21 @@ class PasswordChanger(wx.Frame):
 
             # 调试信息已在CommandExecutor中处理
             if success:
-                wx.MessageBox("密码修改成功！", "成功", wx.OK | wx.ICON_INFORMATION)
+                wx.MessageBox("密码修改成功!", "成功", wx.OK | wx.ICON_INFORMATION)
             else:
-                wx.MessageBox(f"操作失败：{msg}", "错误", wx.OK | wx.ICON_ERROR)
+                wx.MessageBox(f"[ERROR] 操作失败: {msg}", "错误", wx.OK | wx.ICON_ERROR)
         except Exception as e:
-            wx.MessageBox(f"系统错误：{str(e)}", "错误", wx.OK | wx.ICON_ERROR)
+            wx.MessageBox(f"[ERROR] 系统错误: {str(e)}", "错误", wx.OK | wx.ICON_ERROR)
         finally:
             self.new_pass.Value = ""
             self.confirm_pass.Value = ""
 
     def validate_input(self, username, p1, p2):
         if not username:
-            wx.MessageBox("用户名不能为空", "错误", wx.OK | wx.ICON_ERROR)
+            wx.MessageBox("用户名不能为空!", "错误", wx.OK | wx.ICON_ERROR)
             return False
         if p1 != p2:
-            wx.MessageBox("两次输入的密码不一致", "错误", wx.OK | wx.ICON_ERROR)
+            wx.MessageBox("两次输入的密码不一致!", "错误", wx.OK | wx.ICON_ERROR)
             return False
         return True
 

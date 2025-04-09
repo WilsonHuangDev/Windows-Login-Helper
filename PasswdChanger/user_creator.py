@@ -100,7 +100,7 @@ class UserCreator(wx.Frame):
 
             wx.MessageBox("用户创建成功!", "成功", wx.OK | wx.ICON_INFORMATION)
         except Exception as e:
-            wx.MessageBox(f"创建失败: {str(e)}", "错误", wx.OK | wx.ICON_ERROR)
+            wx.MessageBox(f"[ERROR] 创建失败: {str(e)}", "错误", wx.OK | wx.ICON_ERROR)
 
     def validate_input(self, user, p1, p2):
         if not user:

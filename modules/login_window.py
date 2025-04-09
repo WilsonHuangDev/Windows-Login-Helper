@@ -84,8 +84,8 @@ class LoginWindow(wx.Frame):
             dynamic_pass = PasswordGenerator.generate_dynamic_password()
             self._debug_print(f"[DEBUG] 初始动态口令: {dynamic_pass}")
         except Exception as e:
-            self._debug_print(f"动态口令生成失败: {str(e)}")
-            wx.MessageBox(f"动态口令生成失败!\n{str(e)}", "错误", wx.OK | wx.ICON_ERROR)
+            self._debug_print(f"[ERROR] 动态口令生成失败: {str(e)}")
+            wx.MessageBox(f"[ERROR] 动态口令生成失败!\n{str(e)}", "错误", wx.OK | wx.ICON_ERROR)
 
     def validate_password(self, input_pass):
         """根据配置验证密码"""
@@ -101,8 +101,8 @@ class LoginWindow(wx.Frame):
             elif self.auth_mode == 1:
                 self._debug_print(f"[DEBUG] 模式1验证 - 输入密码: {input_pass}")
                 if not self.static_password:
-                    self._debug_print("静态密码未配置")
-                    wx.MessageBox("静态密码未配置!", "错误", wx.OK | wx.ICON_ERROR)
+                    self._debug_print("[ERROR] 静态密码未配置")
+                    wx.MessageBox("[ERROR] 静态密码未配置!", "错误", wx.OK | wx.ICON_ERROR)
                     return False
                 return input_pass == self.static_password
 
@@ -123,12 +123,12 @@ class LoginWindow(wx.Frame):
 
             # 无效模式
             else:
-                self._debug_print(f"无效认证模式: {self.auth_mode}")
-                wx.MessageBox("无效的认证模式配置!", "错误", wx.OK | wx.ICON_ERROR)
+                self._debug_print(f"[ERROR] 无效认证模式: {self.auth_mode}")
+                wx.MessageBox("[ERROR] 无效的认证模式配置!", "错误", wx.OK | wx.ICON_ERROR)
                 return False
 
         except Exception as e:
-            error_msg = f"验证失败: {str(e)}"
+            error_msg = f"[ERROR] 验证失败: {str(e)}"
             self._debug_print(error_msg)
             if self.debug_mode == 1:
                 import traceback
@@ -150,12 +150,12 @@ class LoginWindow(wx.Frame):
                 self.Hide()  # 隐藏认证窗口
                 self._debug_print("[DEBUG] 成功开启主窗口并隐藏认证窗口")
             else:
-                self._debug_print("认证失败")
+                self._debug_print("[WARNING] 认证失败")
                 wx.MessageBox("认证失败，请检查输入!", "错误", wx.OK | wx.ICON_ERROR)
                 self.password_entry.SetValue("")
         except Exception as e:
-            self._debug_print(f"登录异常: {str(e)}")
-            wx.MessageBox(f"发生错误!\n{str(e)}", "错误", wx.OK | wx.ICON_ERROR)
+            self._debug_print(f"[ERROR] 登录异常: {str(e)}")
+            wx.MessageBox(f"[ERROR] 发生错误!\n{str(e)}", "错误", wx.OK | wx.ICON_ERROR)
 
     def bypass_login(self):
         """直接跳过登录"""

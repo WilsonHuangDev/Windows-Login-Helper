@@ -27,12 +27,12 @@ class ProcessManager:
             )
 
             if ret <= 32:
-                print(f"提权失败: {ret}")
+                print(f"[ERROR] 提权失败: {ret}")
                 return False
 
             sys.exit(0)
         except Exception as e:
-            print(f"权限请求失败: {str(e)}")
+            print(f"[ERROR] 权限请求失败: {str(e)}")
             print("程序将在 10 秒后自动退出...")
             time.sleep(10)
             sys.exit(1)
@@ -47,7 +47,7 @@ class ProcessManager:
             config = ConfigManager.get_config()
             debug_mode = config.get('debug_mode', 0) == 1
 
-            # 设置调试模式（关键修复点）
+            # 设置调试模式
             DebugLogger.set_debug_mode(debug_mode)  # 使用正确的类方法
             logger = DebugLogger()  # 实例化（此时才会创建进程）
 

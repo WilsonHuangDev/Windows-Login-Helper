@@ -108,8 +108,8 @@ class MainWindow(wx.Frame):
             )
             process.wait()
         except Exception as e:
-            DebugLogger.log(f"CMD进程启动失败: {str(e)}")
-            wx.MessageBox(f"CMD进程启动失败!\n{str(e)}", "错误", wx.OK | wx.ICON_ERROR)
+            DebugLogger.log(f"[ERROR] CMD进程启动失败: {str(e)}")
+            wx.MessageBox(f"[ERROR] CMD进程启动失败!\n{str(e)}", "错误", wx.OK | wx.ICON_ERROR)
         finally:
             wx.CallAfter(self.restore_main_window)
 
@@ -121,10 +121,13 @@ class MainWindow(wx.Frame):
 
     def _update_button_state(self):
         """根据认证模式更新按钮状态"""
-        config = ConfigManager.get_config()
-        auth_mode = config.get('auth_mode', 0)
-        self.btn_exit.Enable(auth_mode != 0)
-        DebugLogger.log("[DEBUG] 成功更新按钮状态")
+        try:
+            config = ConfigManager.get_config()
+            auth_mode = config.get('auth_mode', 0)
+            self.btn_exit.Enable(auth_mode != 0)
+            DebugLogger.log("[DEBUG] 成功更新按钮状态")
+        except Exception as e:
+            DebugLogger.log(f"[ERROR] 更新按钮状态失败: {str(e)}")
 
     def on_exit(self, event):
         """安全退出至认证窗口"""

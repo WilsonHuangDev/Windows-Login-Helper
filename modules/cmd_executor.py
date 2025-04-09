@@ -22,13 +22,13 @@ class CommandExecutor:
             if result.stdout.strip():
                 DebugLogger.log(f"[DEBUG] 命令输出: {result.stdout.strip()}")
             if result.stderr.strip():
-                DebugLogger.log(f"命令错误: {result.stderr.strip()}")
+                DebugLogger.log(f"[ERROR] 命令错误: {result.stderr.strip()}")
 
             return True, result.stdout.strip()
         except subprocess.CalledProcessError as e:
             error_msg = e.stderr.strip() or "Unknown error"
-            DebugLogger.log(f"命令失败: {error_msg}")
+            DebugLogger.log(f"[ERROR] 命令失败: {error_msg}")
             return False, error_msg
         except Exception as e:
-            DebugLogger.log(f"系统错误: {str(e)}")
+            DebugLogger.log(f"[ERROR] 系统错误: {str(e)}")
             return False, str(e)

@@ -60,9 +60,9 @@ class PowerOptionsWindow(wx.Frame):
     def _execute_power_action(self, action):
         try:
             if platform.system() != "Windows":
-                DebugLogger.log("操作失败: 仅支持Windows系统")
-                wx.MessageBox("仅支持 Windows 系统!", "错误", wx.OK | wx.ICON_ERROR)
-                raise NotImplementedError("仅支持Windows系统")
+                DebugLogger.log("[ERROR] 操作失败: 仅支持Windows系统")
+                wx.MessageBox("[ERROR] 仅支持 Windows 系统!", "错误", wx.OK | wx.ICON_ERROR)
+                raise NotImplementedError("[ERROR] 仅支持Windows系统")
 
             # 获取必要函数
             advapi32 = ctypes.WinDLL('advapi32', use_last_error=True)
@@ -119,8 +119,8 @@ class PowerOptionsWindow(wx.Frame):
                 ctypes.windll.powrprof.SetSuspendState(True, False, False)
 
         except Exception as e:
-            DebugLogger.log(f"操作失败: {str(e)}")
-            wx.MessageBox(f"操作失败: {str(e)}", "错误", wx.OK | wx.ICON_ERROR)
+            DebugLogger.log(f"[ERROR] 操作失败: {str(e)}")
+            wx.MessageBox(f"[ERROR] 操作失败: {str(e)}", "错误", wx.OK | wx.ICON_ERROR)
         finally:
             ctypes.windll.kernel32.CloseHandle(hToken)
 
@@ -144,5 +144,40 @@ class PowerOptionsWindow(wx.Frame):
 
     def _update_button_state(self):
         """根据系统电源选项状态更新按钮状态"""
-        self.btn_hibernate.Enable()
-        DebugLogger.log("[DEBUG] 成功更新按钮状态")
+        try:
+            # 检查是否支持睡眠和休眠
+            power_capabilities = ctypes.Structure()
+
+            class SYSTEM_POWER_CAPABILITIES(ctypes.Structure):
+                _fields_ = [
+                    ("PowerButtonPresent", wintypes.BOOLEAN),
+                    ("SleepButtonPresent", wintypes.BOOLEAN),
+                    ("LidPresent", wintypes.BOOLEAN),
+                    ("SystemS1", wintypes.BOOLEAN),
+                    ("SystemS2", wintypes.BOOLEAN),
+                    ("SystemS3", wintypes.BOOLEAN),
+                    ("SystemS4", wintypes.BOOLEAN),  # Hibernate
+                    ("SystemS5", wintypes.BOOLEAN),
+                ]
+
+            powrprof = ctypes.WinDLL("PowrProf.dll")
+            powrprof.GetPwrCapabilities(ctypes.byref(power_capabilities))
+
+            # 检查是否支持现代待机（S0）
+            power_role = ctypes.WinDLL("PowrProf.dll").PowerDeterminePlatformRoleEx(0)
+            supports_s0 = power_role == 3  # 3 表示支持现代待机
+
+            # 根据能力设置按钮状态
+            if not (power_capabilities.SystemS3 or supports_s0):
+                self.btn_sleep.Disable()
+            else:
+                self.btn_sleep.Enable()
+
+            if not power_capabilities.SystemS4:
+                self.btn_hibernate.Disable()
+            else:
+                self.btn_hibernate.Enable()
+
+            DebugLogger.log("[DEBUG] 成功更新按钮状态")
+        except Exception as e:
+            DebugLogger.log(f"[ERROR] 更新按钮状态失败: {str(e)}")

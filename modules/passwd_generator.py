@@ -10,11 +10,11 @@ class PasswordGenerator:
     @staticmethod
     def _get_key_path():
         # 通过_get_dir_path获取基础目录
-        config_dir = ConfigManager._get_dir_path()
+        key_dir = ConfigManager._get_dir_path()
 
         # 拼接配置文件名
-        config_name = 'passwd_key_map.ini'
-        key_path = os.path.join(config_dir, config_name)  # 合并完整路径
+        key_name = 'passwd_key_map.ini'
+        key_path = os.path.join(key_dir, key_name)  # 合并完整路径
         DebugLogger.log(f"[DEBUG] 密钥表路径: {key_path}")
         return key_path
 
@@ -35,7 +35,7 @@ class PasswordGenerator:
                     key_map[key] = config['Keys'][key]
             return key_map
         except Exception as e:
-            ConfigManager._show_error(f"密钥表加载失败: {str(e)}")
+            ConfigManager._show_error(f"[ERROR] 密钥表加载失败: {str(e)}")
             return {}
 
     @classmethod
@@ -70,9 +70,9 @@ class PasswordGenerator:
                 config.write(f)
             DebugLogger.log("[DEBUG] 已自动创建密钥表文件")
         except PermissionError:
-            ConfigManager._show_error("需要管理员权限创建密钥表!")
+            ConfigManager._show_error("[ERROR] 需要管理员权限创建密钥表!")
         except Exception as e:
-            ConfigManager._show_error(f"创建密钥表失败: {str(e)}")
+            ConfigManager._show_error(f"[ERROR] 创建密钥表失败: {str(e)}")
 
     @classmethod
     def generate_dynamic_password(cls):
@@ -96,8 +96,8 @@ class PasswordGenerator:
                 pair = encrypted_str[i:i + 2].ljust(2, "0")
                 password_part = cls.key_map.get(pair, None)  # 使用 cls.key_map
                 if not password_part:
-                    ConfigManager._show_error(f"无效的密钥对: {pair}")
-                    raise ValueError(f"无效的密钥对: {pair}")
+                    ConfigManager._show_error(f"[ERROR] 无效的密钥对: {pair}")
+                    raise ValueError(f"[ERROR] 无效的密钥对: {pair}")
                 password_parts.append(password_part)
 
             raw_password = "".join(password_parts)
@@ -113,5 +113,5 @@ class PasswordGenerator:
 
             return "".join(letters + numbers)
         except Exception as e:
-            ConfigManager._show_error(f"生成动态口令失败: {str(e)}")
-            raise ValueError(f"生成动态口令失败: {str(e)}")
+            ConfigManager._show_error(f"[ERROR] 生成动态口令失败: {str(e)}")
+            raise ValueError(f"[ERROR] 生成动态口令失败: {str(e)}")
