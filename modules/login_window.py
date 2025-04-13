@@ -13,25 +13,30 @@ class LoginWindow(wx.Frame):
         self._app_ref = wx.GetApp()  # 保持应用引用
         self.SetIcon(wx.Icon("Assets/icon.ico"))  # 设置窗口图标
         self._load_config()
+
+        # 判断是否跳过登录
+        if self.auth_mode == 0:
+            self._debug_print("[DEBUG] 模式0: 跳过密码验证")
+            self.bypass_login()
+            return
+
         self.init_ui()
         self._init_timer()
         self.Center()
+        self.Show()
         self._debug_print("[DEBUG] 认证窗口初始化完成")
 
         if self.debug_mode == 1 and self.auth_mode in (2, 3):
             wx.CallAfter(self._log_initial_password)
 
     def _load_config(self):
+        # 加载配置文件（程序启动后第2次调用_get_dir_path）
         self.config = ConfigManager.get_config()
         self.auth_mode = self.config.get('auth_mode', 0)
         self.static_password = self.config.get('static_password', '')
         self.debug_mode = self.config.get('debug_mode', 0)
 
     def init_ui(self):
-        if self.auth_mode == 0:
-            self.bypass_login()
-            return
-
         panel = wx.Panel(self)
         main_sizer = wx.BoxSizer(wx.VERTICAL)
 
@@ -163,5 +168,4 @@ class LoginWindow(wx.Frame):
         from modules.main_window import MainWindow
         self.main_win = MainWindow()  # 保持主窗口引用
         self.main_win.Show()
-        self.Hide()
-        self._debug_print("[DEBUG] 成功开启主窗口并隐藏认证窗口")
+        self._debug_print("[DEBUG] 成功跳过认证窗口并开启主窗口")

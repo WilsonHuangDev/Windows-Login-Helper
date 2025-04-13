@@ -7,36 +7,49 @@ from modules.debug_window import DebugLogger
 
 
 class ConfigManager:
+    _dir_created = False
+
     @staticmethod
     def _get_dir_path():
         """根据运行模式返回配置文件所在目录"""
+        # 初始化 base_dir
+        base_dir = None
+
         # 检测是否为打包后的 EXE
         if getattr(sys, 'frozen', False):
             # EXE模式：配置文件在软件所在目录
             base_dir = os.path.dirname(sys.executable)
+            DebugLogger.log(f"[DEBUG] 检测到构建版本，配置文件目录路径: {base_dir}")
         else:
             # PY模式：配置文件在系统盘的Windows\WindowsLoginHelper目录
             system_root = os.environ.get('SYSTEMROOT', 'C:\\Windows')
             base_dir = os.path.join(system_root, 'WindowsLoginHelper')
+            DebugLogger.log(f"[DEBUG] 检测到开发代码版本，配置文件目录路径: {base_dir}")
+
+        # 确保 base_dir 被正确赋值
+        if base_dir is None:
+            ConfigManager._show_error("[ERROR] 无法确定配置文件目录路径")
+            raise RuntimeError("[ERROR] 无法确定配置文件目录路径")
+
+        if not ConfigManager._dir_created:
+            # 使用Windows API创建日志目录创建基础目录
+            DebugLogger.log("[DEBUG] 正在使用Windows API创建配置文件目录")
             if not ctypes.windll.kernel32.CreateDirectoryW(base_dir, None):
-                DebugLogger.log("[DEBUG] 正在使用内核对象创建配置文件目录")
                 error_code = ctypes.windll.kernel32.GetLastError()
                 if error_code != 183:  # 忽略已存在错误
-                    DebugLogger.log(f"[ERROR] 目录创建失败: {str(error_code)}")
-                    ctypes.windll.user32.MessageBoxW(0, f"[ERROR] 目录创建失败!\n错误代码: {error_code}", "错误", 0x10)
+                    ConfigManager._show_error(f"[ERROR] 目录创建失败: {str(error_code)}")
                     sys.exit(1)
 
-        # 拼接Logs目录路径
-        log_folder = os.path.join(base_dir, 'Logs')
+            # 使用Windows API创建日志目录
+            log_folder = os.path.join(base_dir, 'Logs')
+            DebugLogger.log("[DEBUG] 正在使用Windows API创建日志目录")
+            if not ctypes.windll.kernel32.CreateDirectoryW(log_folder, None):
+                error_code = ctypes.windll.kernel32.GetLastError()
+                if error_code != 183:  # 忽略已存在错误
+                    ConfigManager._show_error(f"[ERROR] 目录创建失败: {str(error_code)}")
+                    sys.exit(1)
 
-        # 使用Windows API创建Logs目录
-        if not ctypes.windll.kernel32.CreateDirectoryW(log_folder, None):
-            DebugLogger.log("[DEBUG] 正在使用内核对象创建Logs目录")
-            error_code = ctypes.windll.kernel32.GetLastError()
-            if error_code != 183:  # 忽略已存在错误
-                DebugLogger.log(f"[ERROR] Logs目录创建失败: 错误代码 {error_code}")
-                ctypes.windll.user32.MessageBoxW(0, f"[ERROR] Logs目录创建失败!\n错误代码: {error_code}", "错误", 0x10)
-                sys.exit(1)
+            ConfigManager._dir_created = True
 
         return base_dir
 
