@@ -6,15 +6,27 @@ from ctypes import wintypes
 from modules.debug_window import DebugLogger
 
 
+# 定义 LUID 结构体
+class LUID(ctypes.Structure):
+    _fields_ = [
+        ("LowPart", wintypes.DWORD),
+        ("HighPart", wintypes.LONG),
+    ]
+
 class PowerOptionsWindow(wx.Frame):
     def __init__(self, parent=None):
-        style = wx.CAPTION | wx.STAY_ON_TOP | wx.CLOSE_BOX
-        super().__init__(parent, title="Windows 登录辅助工具", size=(250, 360), style=style)
-        self.parent = parent  # 保存父窗口引用
-        self.SetIcon(wx.Icon("Assets/icon.ico"))  # 设置窗口图标
-        self.init_ui()
-        self.Center()
-        DebugLogger.log("[DEBUG] 电源选项窗口初始化完成")
+        try:
+            DebugLogger.log("[DEBUG] 开始初始化 PowerOptionsWindow")
+            style = wx.CAPTION | wx.STAY_ON_TOP | wx.CLOSE_BOX
+            super().__init__(parent, title="Windows 登录辅助工具", size=(250, 360), style=style)
+            self.parent = parent  # 保存父窗口引用
+            self.SetIcon(wx.Icon("Assets/icon.ico"))  # 设置窗口图标
+            self.init_ui()
+            self.Center()
+            DebugLogger.log("[DEBUG] PowerOptionsWindow 初始化完成")
+        except Exception as e:
+            DebugLogger.log(f"[ERROR] PowerOptionsWindow 初始化失败: {str(e)}")
+            raise
         
     def init_ui(self):
         panel = wx.Panel(self)
@@ -72,7 +84,7 @@ class PowerOptionsWindow(wx.Frame):
             class TOKEN_PRIVILEGES(ctypes.Structure):
                 _fields_ = [
                     ("PrivilegeCount", wintypes.DWORD),
-                    ("Luid", wintypes.LUID),
+                    ("Luid", LUID),
                     ("Attributes", wintypes.DWORD)
                 ]
 
@@ -87,7 +99,7 @@ class PowerOptionsWindow(wx.Frame):
                 ctypes.byref(hToken)
             )
 
-            luid = wintypes.LUID()
+            luid = LUID()
             advapi32.LookupPrivilegeValueW(None, SE_SHUTDOWN_NAME, ctypes.byref(luid))
 
             tp = TOKEN_PRIVILEGES()
@@ -145,9 +157,7 @@ class PowerOptionsWindow(wx.Frame):
     def _update_button_state(self):
         """根据系统电源选项状态更新按钮状态"""
         try:
-            # 检查是否支持睡眠和休眠
-            power_capabilities = ctypes.Structure()
-
+            # 定义 SYSTEM_POWER_CAPABILITIES 结构体
             class SYSTEM_POWER_CAPABILITIES(ctypes.Structure):
                 _fields_ = [
                     ("PowerButtonPresent", wintypes.BOOLEAN),
@@ -155,16 +165,22 @@ class PowerOptionsWindow(wx.Frame):
                     ("LidPresent", wintypes.BOOLEAN),
                     ("SystemS1", wintypes.BOOLEAN),
                     ("SystemS2", wintypes.BOOLEAN),
-                    ("SystemS3", wintypes.BOOLEAN),
-                    ("SystemS4", wintypes.BOOLEAN),  # Hibernate
+                    ("SystemS3", wintypes.BOOLEAN),  # 睡眠
+                    ("SystemS4", wintypes.BOOLEAN),  # 休眠
                     ("SystemS5", wintypes.BOOLEAN),
                 ]
 
+            # 实例化结构体
+            power_capabilities = SYSTEM_POWER_CAPABILITIES()
+
+            # 调用 Windows API 获取电源能力
             powrprof = ctypes.WinDLL("PowrProf.dll")
-            powrprof.GetPwrCapabilities(ctypes.byref(power_capabilities))
+            result = powrprof.GetPwrCapabilities(ctypes.byref(power_capabilities))
+            if result == 0:
+                raise ctypes.WinError()
 
             # 检查是否支持现代待机（S0）
-            power_role = ctypes.WinDLL("PowrProf.dll").PowerDeterminePlatformRoleEx(0)
+            power_role = powrprof.PowerDeterminePlatformRoleEx(0)
             supports_s0 = power_role == 3  # 3 表示支持现代待机
 
             # 根据能力设置按钮状态
@@ -181,3 +197,4 @@ class PowerOptionsWindow(wx.Frame):
             DebugLogger.log("[DEBUG] 成功更新按钮状态")
         except Exception as e:
             DebugLogger.log(f"[ERROR] 更新按钮状态失败: {str(e)}")
+            wx.MessageBox(f"[ERROR] 更新按钮状态失败: {str(e)}", "错误", wx.OK | wx.ICON_ERROR)

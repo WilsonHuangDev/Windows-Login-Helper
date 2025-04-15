@@ -5,6 +5,7 @@ from .cmd_executor import CommandExecutor
 from .main_window import MainWindow
 from .login_window import LoginWindow
 from .debug_window import DebugLogger
+from .power_options import PowerOptionsWindow
 
 # 声明导出列表
 __all__ = [
@@ -13,5 +14,6 @@ __all__ = [
     "CommandExecutor",
     "MainWindow",
     "LoginWindow",
-    "DebugLogger"
+    "DebugLogger",
+    "PowerOptionsWindow"
 ]
