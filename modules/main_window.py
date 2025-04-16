@@ -99,9 +99,7 @@ class MainWindow(wx.Frame):
     def on_power_options(self, event):
         try:
             from modules.power_options import PowerOptionsWindow
-            DebugLogger.log("[DEBUG] 正在尝试创建 PowerOptionsWindow 实例")
-            PowerOptionsWindow(parent=self).Show()
-            DebugLogger.log("[DEBUG] PowerOptionsWindow 实例创建成功")
+            PowerOptionsWindow(parent=self).Show()  # 传递有效parent
             self.Hide()
             DebugLogger.log("[DEBUG] 主窗口已隐藏")
         except Exception as e:

@@ -15,19 +15,13 @@ class LUID(ctypes.Structure):
 
 class PowerOptionsWindow(wx.Frame):
     def __init__(self, parent=None):
-        try:
-            DebugLogger.log("[DEBUG] 开始初始化 PowerOptionsWindow")
-            style = wx.CAPTION | wx.STAY_ON_TOP | wx.CLOSE_BOX
-            super().__init__(parent, title="Windows 登录辅助工具", size=(250, 360), style=style)
-            self.parent = parent  # 保存父窗口引用
-            self.SetIcon(wx.Icon("Assets/icon.ico"))  # 设置窗口图标
-            self.init_ui()
-            DebugLogger.log("[DEBUG] PowerOptionsWindow UI初始化完成")
-            self.Center()
-            DebugLogger.log("[DEBUG] PowerOptionsWindow 初始化完成")
-        except Exception as e:
-            DebugLogger.log(f"[ERROR] PowerOptionsWindow 初始化失败: {str(e)}")
-            raise
+        style = wx.CAPTION | wx.STAY_ON_TOP | wx.CLOSE_BOX
+        super().__init__(parent, title="Windows 登录辅助工具", size=(250, 360), style=style)
+        self.parent = parent  # 保存父窗口引用
+        self.SetIcon(wx.Icon("Assets/icon.ico"))  # 设置窗口图标
+        self.init_ui()
+        self.Center()
+        DebugLogger.log("[DEBUG] PowerOptionsWindow 初始化完成")
         
     def init_ui(self):
         panel = wx.Panel(self)
@@ -47,7 +41,7 @@ class PowerOptionsWindow(wx.Frame):
         btn_sizer.Add(self.btn_hibernate, flag=wx.EXPAND)
         btn_sizer.Add(btn_back, flag=wx.EXPAND)
 
-        self._update_button_state()
+        # self._update_button_state()
 
         tooltip_text = wx.StaticText(panel, label="电源选项", style=wx.ALIGN_CENTER)
         text_font = tooltip_text.GetFont()
