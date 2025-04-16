@@ -24,7 +24,7 @@ class LoginWindow(wx.Frame):
         self._init_timer()
         self.Center()
         self.Show()
-        self._debug_print("[DEBUG] 认证窗口初始化完成")
+        self._debug_print("[DEBUG] LoginWindow 初始化完成")
 
         if self.debug_mode == 1 and self.auth_mode in (2, 3):
             wx.CallAfter(self._log_initial_password)

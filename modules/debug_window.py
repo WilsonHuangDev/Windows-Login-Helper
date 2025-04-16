@@ -101,7 +101,7 @@ class DebugWindow(wx.Frame):
         self.Bind(wx.EVT_TIMER, self.update_logs, self.timer)
         self.timer.Start(5)
         self.Show()
-        DebugLogger.log("[DEBUG] 调试信息输出窗口初始化完成")
+        DebugLogger.log("[DEBUG] DebugWindow 初始化完成")
 
     def init_ui(self):
         panel = wx.Panel(self)

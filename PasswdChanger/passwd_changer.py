@@ -25,7 +25,7 @@ class PasswordChanger(wx.Frame):
         self.SetIcon(wx.Icon("Assets/icon.ico"))  # 设置窗口图标
         self.init_ui()
         self.Center()
-        DebugLogger.log("[DEBUG] 修改用户密码窗口初始化完成")
+        DebugLogger.log("[DEBUG] PasswordChanger 初始化完成")
 
     def init_ui(self):
         panel = wx.Panel(self)

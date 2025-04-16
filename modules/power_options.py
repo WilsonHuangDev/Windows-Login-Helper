@@ -22,6 +22,7 @@ class PowerOptionsWindow(wx.Frame):
             self.parent = parent  # 保存父窗口引用
             self.SetIcon(wx.Icon("Assets/icon.ico"))  # 设置窗口图标
             self.init_ui()
+            DebugLogger.log("[DEBUG] PowerOptionsWindow UI初始化完成")
             self.Center()
             DebugLogger.log("[DEBUG] PowerOptionsWindow 初始化完成")
         except Exception as e:

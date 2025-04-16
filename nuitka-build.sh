@@ -11,10 +11,13 @@ rm -rf ./dist 2> /dev/null
 # 执行打包命令（关键配置）
 python -m nuitka \
 --standalone \
---windows-console-mode=disable \
+--windows-console-mode=attach \
 --windows-icon-from-ico=./Assets/icon.ico \
+--company-name=Wilson.Huang \
+--product-name="Windows 登录辅助工具" \
 --include-package=PasswdChanger \
 --include-package=modules \
+--include-data-file="./Assets/**/*.ico=Assets/" \
 --output-dir=./dist/Windows-Login-Helper \
 --output-filename=WinLoginHelper \
 --remove-output \

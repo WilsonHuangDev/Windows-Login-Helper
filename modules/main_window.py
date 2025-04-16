@@ -17,7 +17,7 @@ class MainWindow(wx.Frame):
         self.init_ui()
         self._init_timer()
         self.Center()
-        DebugLogger.log("[DEBUG] 主窗口初始化完成")
+        DebugLogger.log("[DEBUG] MainWindow 初始化完成")
 
     def init_ui(self):
         panel = wx.Panel(self)
@@ -100,10 +100,8 @@ class MainWindow(wx.Frame):
         try:
             from modules.power_options import PowerOptionsWindow
             DebugLogger.log("[DEBUG] 正在尝试创建 PowerOptionsWindow 实例")
-            power_window = PowerOptionsWindow(parent=self)
+            PowerOptionsWindow(parent=self).Show()
             DebugLogger.log("[DEBUG] PowerOptionsWindow 实例创建成功")
-            power_window.Show()
-            DebugLogger.log("[DEBUG] PowerOptionsWindow 已显示")
             self.Hide()
             DebugLogger.log("[DEBUG] 主窗口已隐藏")
         except Exception as e:
