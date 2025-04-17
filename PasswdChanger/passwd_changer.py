@@ -1,6 +1,7 @@
 import wx
 
 from modules.debug_window import DebugLogger
+from modules.window_manager import WindowManager
 
 
 class SecurePasswordTextCtrl(wx.TextCtrl):
@@ -18,10 +19,9 @@ class SecurePasswordTextCtrl(wx.TextCtrl):
 
 
 class PasswordChanger(wx.Frame):
-    def __init__(self, parent=None):
+    def __init__(self):
         style = wx.CAPTION | wx.STAY_ON_TOP | wx.CLOSE_BOX
-        super().__init__(parent, title="Windows 登录辅助工具", size=(320, 250), style=style)  # 传递parent给父类
-        self.parent = parent  # 保存父窗口引用
+        super().__init__(None, title="Windows 登录辅助工具", size=(320, 250), style=style)
         self.SetIcon(wx.Icon("Assets/icon.ico"))  # 设置窗口图标
         self.init_ui()
         self.Center()
@@ -68,9 +68,8 @@ class PasswordChanger(wx.Frame):
         panel.SetSizer(main_sizer)
 
     def on_return(self, event):
-        if self.parent:
-            self.parent.restore_main_window()
-
+        from modules.main_window import MainWindow
+        WindowManager().switch_window(MainWindow)
         self.Destroy()
 
     def on_change(self, event):

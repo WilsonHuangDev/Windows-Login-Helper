@@ -5,6 +5,7 @@ import wx
 
 from modules.debug_window import DebugLogger
 from modules.config_manager import ConfigManager
+from modules.window_manager import WindowManager
 
 
 class MainWindow(wx.Frame):
@@ -79,8 +80,8 @@ class MainWindow(wx.Frame):
     def on_password(self, event):
         try:
             from PasswdChanger.passwd_changer import PasswordChanger
-            PasswordChanger(parent=self).Show()  # 传递有效parent
-            self.Hide()
+            WindowManager().switch_window(PasswordChanger)
+            self.Destroy()
             DebugLogger.log("[DEBUG] 成功开启用户密码修改窗口并隐藏主窗口")
         except (Exception, RuntimeError, NotImplementedError) as e:
             DebugLogger.log(f"[ERROR] 用户密码修改窗口开启失败: {str(e)}")
@@ -90,8 +91,8 @@ class MainWindow(wx.Frame):
     def on_user_create(self, event):
         try:
             from PasswdChanger.user_creator import UserCreator
-            UserCreator(parent=self).Show()  # 传递有效parent
-            self.Hide()
+            WindowManager().switch_window(UserCreator)
+            self.Destroy()
             DebugLogger.log("[DEBUG] 成功开启用户创建窗口并隐藏主窗口")
         except (Exception, RuntimeError, NotImplementedError) as e:
             DebugLogger.log(f"[ERROR] 创建用户窗口开启失败: {str(e)}")
@@ -101,9 +102,9 @@ class MainWindow(wx.Frame):
     def on_power_options(self, event):
         try:
             from modules.power_options import PowerOptionsWindow
-            PowerOptionsWindow(parent=self).Show()  # 传递有效parent
-            self.Hide()
-            DebugLogger.log("[DEBUG] 成功开启电源选项窗口并隐藏主窗口")
+            WindowManager().switch_window(PowerOptionsWindow)
+            self.Destroy()  # 销毁当前主窗口
+            DebugLogger.log("[DEBUG] 成功开启电源选项窗口并销毁主窗口")
         except (Exception, RuntimeError, NotImplementedError) as e:
             DebugLogger.log(f"[ERROR] 电源选项窗口开启失败: {str(e)}")
             self.restore_main_window()  # 确保恢复主窗口
@@ -151,7 +152,7 @@ class MainWindow(wx.Frame):
             from modules.login_window import LoginWindow
             login_win = LoginWindow()
             login_win.Show()
-            self.Hide()
+            self.Destroy()  # 销毁主窗口
 
         wx.CallAfter(safe_exit)  # 确保在主线程执行
         DebugLogger.log("[DEBUG] 已安全退出")

@@ -4,6 +4,7 @@ import datetime
 from modules.config_manager import ConfigManager
 from modules.passwd_generator import PasswordGenerator
 from modules.debug_window import DebugLogger
+from modules.window_manager import WindowManager
 
 
 class LoginWindow(wx.Frame):
@@ -148,12 +149,10 @@ class LoginWindow(wx.Frame):
 
             if self.validate_password(input_pass):
                 self._debug_print("[DEBUG] 验证成功")
-                # 创建主窗口但不立即销毁登录窗口
                 from modules.main_window import MainWindow
-                main_win = MainWindow()
-                main_win.Show()
-                self.Hide()  # 隐藏认证窗口
-                self._debug_print("[DEBUG] 成功开启主窗口并隐藏认证窗口")
+                WindowManager().switch_window(MainWindow)
+                self.Destroy()
+                self._debug_print("[DEBUG] 成功开启主窗口并销毁认证窗口")
             else:
                 self._debug_print("[WARNING] 认证失败")
                 wx.MessageBox("认证失败，请检查输入!", "错误", wx.OK | wx.ICON_ERROR)
@@ -166,6 +165,6 @@ class LoginWindow(wx.Frame):
         """直接跳过登录"""
         self._debug_print("[DEBUG] 跳过登录流程")
         from modules.main_window import MainWindow
-        self.main_win = MainWindow()  # 保持主窗口引用
-        self.main_win.Show()
+        WindowManager().switch_window(MainWindow)
+        self.Destroy()
         self._debug_print("[DEBUG] 成功跳过认证窗口并开启主窗口")

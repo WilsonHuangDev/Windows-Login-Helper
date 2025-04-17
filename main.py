@@ -6,6 +6,7 @@ import time
 import wx
 
 from modules.debug_window import DebugLogger
+from modules.window_manager import WindowManager
 
 
 class ProcessManager:
@@ -40,13 +41,12 @@ class ProcessManager:
     def main_loop():
         try:
             # 确保只创建一个 wx.App 实例
-            app = wx.App() if not wx.GetApp() else wx.GetApp()
+            app = wx.App()
 
             logger = DebugLogger()  # 实例化（此时才会创建进程）
 
             from modules.login_window import LoginWindow
-            frame = LoginWindow()
-
+            WindowManager().switch_window(LoginWindow)
             app.MainLoop()
 
         except Exception as e:

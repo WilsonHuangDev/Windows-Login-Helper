@@ -6,6 +6,7 @@ from .main_window import MainWindow
 from .login_window import LoginWindow
 from .debug_window import DebugLogger
 from .power_options import PowerOptionsWindow
+from .window_manager import WindowManager
 
 # 声明导出列表
 __all__ = [
@@ -15,5 +16,6 @@ __all__ = [
     "MainWindow",
     "LoginWindow",
     "DebugLogger",
-    "PowerOptionsWindow"
+    "PowerOptionsWindow",
+    "WindowManager"
 ]

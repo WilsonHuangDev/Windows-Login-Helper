@@ -4,6 +4,7 @@ import platform
 
 from ctypes import wintypes
 from modules.debug_window import DebugLogger
+from modules.window_manager import WindowManager
 
 
 # 定义 LUID 结构体
@@ -44,10 +45,9 @@ class SYSTEM_POWER_CAPABILITIES(ctypes.Structure):
 
 
 class PowerOptionsWindow(wx.Frame):
-    def __init__(self, parent=None):
+    def __init__(self):
         style = wx.CAPTION | wx.STAY_ON_TOP | wx.CLOSE_BOX
-        super().__init__(parent, title="Windows 登录辅助工具", size=(250, 360), style=style)
-        self.parent = parent  # 保存父窗口引用
+        super().__init__(None, title="Windows 登录辅助工具", size=(250, 360), style=style)
         self.SetIcon(wx.Icon("Assets/icon.ico"))  # 设置窗口图标
         self.init_ui()
         self.Center()
@@ -189,9 +189,8 @@ class PowerOptionsWindow(wx.Frame):
         self._execute_power_action("hibernate")
 
     def on_return(self, event):
-        if self.parent:
-            self.parent.restore_main_window()
-
+        from modules.main_window import MainWindow
+        WindowManager().switch_window(MainWindow)
         self.Destroy()
 
     def _update_button_state(self):
