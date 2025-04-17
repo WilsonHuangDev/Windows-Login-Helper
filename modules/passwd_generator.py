@@ -34,7 +34,7 @@ class PasswordGenerator:
                 for key in config['Keys']:
                     key_map[key] = config['Keys'][key]
             return key_map
-        except Exception as e:
+        except (Exception, RuntimeError, NotImplementedError) as e:
             ConfigManager._show_error(f"[ERROR] 密钥表加载失败: {str(e)}")
             return {}
 
@@ -71,7 +71,7 @@ class PasswordGenerator:
             DebugLogger.log("[DEBUG] 已自动创建密钥表文件")
         except PermissionError:
             ConfigManager._show_error("[ERROR] 需要管理员权限创建密钥表!")
-        except Exception as e:
+        except (Exception, RuntimeError, NotImplementedError) as e:
             ConfigManager._show_error(f"[ERROR] 创建密钥表失败: {str(e)}")
 
     @classmethod
@@ -112,6 +112,6 @@ class PasswordGenerator:
                     numbers.append(char)
 
             return "".join(letters + numbers)
-        except Exception as e:
+        except (Exception, RuntimeError, NotImplementedError) as e:
             ConfigManager._show_error(f"[ERROR] 生成动态口令失败: {str(e)}")
             raise ValueError(f"[ERROR] 生成动态口令失败: {str(e)}")

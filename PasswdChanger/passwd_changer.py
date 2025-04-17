@@ -71,7 +71,7 @@ class PasswordChanger(wx.Frame):
         if self.parent:
             self.parent.restore_main_window()
 
-        self.Hide()
+        self.Destroy()
 
     def on_change(self, event):
         try:
@@ -90,7 +90,7 @@ class PasswordChanger(wx.Frame):
                 wx.MessageBox("密码修改成功!", "成功", wx.OK | wx.ICON_INFORMATION)
             else:
                 wx.MessageBox(f"[ERROR] 操作失败: {msg}", "错误", wx.OK | wx.ICON_ERROR)
-        except Exception as e:
+        except (Exception, RuntimeError, NotImplementedError) as e:
             wx.MessageBox(f"[ERROR] 系统错误: {str(e)}", "错误", wx.OK | wx.ICON_ERROR)
         finally:
             self.new_pass.Value = ""

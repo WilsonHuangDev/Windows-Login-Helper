@@ -99,7 +99,7 @@ class UserCreator(wx.Frame):
                     raise Exception(msg)
 
             wx.MessageBox("用户创建成功!", "成功", wx.OK | wx.ICON_INFORMATION)
-        except Exception as e:
+        except (Exception, RuntimeError, NotImplementedError) as e:
             wx.MessageBox(f"[ERROR] 创建失败: {str(e)}", "错误", wx.OK | wx.ICON_ERROR)
 
     def validate_input(self, user, p1, p2):
@@ -115,4 +115,4 @@ class UserCreator(wx.Frame):
         if self.parent:
             self.parent.restore_main_window()
 
-        self.Hide()
+        self.Destroy()

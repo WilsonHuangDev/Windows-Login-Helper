@@ -91,7 +91,7 @@ class ConfigManager:
             }
             DebugLogger.log(f"[DEBUG] 读取的配置信息: {config_data}")
             return config_data
-        except Exception as e:
+        except (Exception, RuntimeError, NotImplementedError) as e:
             cls._show_error(f"[ERROR] 配置加载失败: {str(e)}")
             return cls._get_default_config()
 
@@ -106,7 +106,7 @@ class ConfigManager:
             DebugLogger.log("[DEBUG] 已自动创建默认配置文件")
         except PermissionError:
             cls._show_error("[ERROR] 需要管理员权限创建配置文件!")
-        except Exception as e:
+        except (Exception, RuntimeError, NotImplementedError) as e:
             cls._show_error(f"[ERROR] 创建配置文件失败: {str(e)}")
 
     @classmethod

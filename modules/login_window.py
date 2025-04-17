@@ -88,7 +88,7 @@ class LoginWindow(wx.Frame):
         try:
             dynamic_pass = PasswordGenerator.generate_dynamic_password()
             self._debug_print(f"[DEBUG] 初始动态口令: {dynamic_pass}")
-        except Exception as e:
+        except (Exception, RuntimeError, NotImplementedError) as e:
             self._debug_print(f"[ERROR] 动态口令生成失败: {str(e)}")
             wx.MessageBox(f"[ERROR] 动态口令生成失败!\n{str(e)}", "错误", wx.OK | wx.ICON_ERROR)
 
@@ -132,7 +132,7 @@ class LoginWindow(wx.Frame):
                 wx.MessageBox("[ERROR] 无效的认证模式配置!", "错误", wx.OK | wx.ICON_ERROR)
                 return False
 
-        except Exception as e:
+        except (Exception, RuntimeError, NotImplementedError) as e:
             error_msg = f"[ERROR] 验证失败: {str(e)}"
             self._debug_print(error_msg)
             if self.debug_mode == 1:
@@ -158,7 +158,7 @@ class LoginWindow(wx.Frame):
                 self._debug_print("[WARNING] 认证失败")
                 wx.MessageBox("认证失败，请检查输入!", "错误", wx.OK | wx.ICON_ERROR)
                 self.password_entry.SetValue("")
-        except Exception as e:
+        except (Exception, RuntimeError, NotImplementedError) as e:
             self._debug_print(f"[ERROR] 登录异常: {str(e)}")
             wx.MessageBox(f"[ERROR] 发生错误!\n{str(e)}", "错误", wx.OK | wx.ICON_ERROR)
 

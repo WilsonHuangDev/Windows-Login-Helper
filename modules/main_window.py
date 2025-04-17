@@ -82,7 +82,7 @@ class MainWindow(wx.Frame):
             PasswordChanger(parent=self).Show()  # 传递有效parent
             self.Hide()
             DebugLogger.log("[DEBUG] 成功开启用户密码修改窗口并隐藏主窗口")
-        except Exception as e:
+        except (Exception, RuntimeError, NotImplementedError) as e:
             DebugLogger.log(f"[ERROR] 用户密码修改窗口开启失败: {str(e)}")
             self.restore_main_window()  # 确保恢复主窗口
             wx.MessageBox(f"[ERROR] 用户密码修改窗口开启失败: {str(e)}", "错误", wx.OK | wx.ICON_ERROR)
@@ -93,7 +93,7 @@ class MainWindow(wx.Frame):
             UserCreator(parent=self).Show()  # 传递有效parent
             self.Hide()
             DebugLogger.log("[DEBUG] 成功开启用户创建窗口并隐藏主窗口")
-        except Exception as e:
+        except (Exception, RuntimeError, NotImplementedError) as e:
             DebugLogger.log(f"[ERROR] 创建用户窗口开启失败: {str(e)}")
             self.restore_main_window()  # 确保恢复主窗口
             wx.MessageBox(f"[ERROR] 创建用户窗口开启失败: {str(e)}", "错误", wx.OK | wx.ICON_ERROR)
@@ -104,7 +104,7 @@ class MainWindow(wx.Frame):
             PowerOptionsWindow(parent=self).Show()  # 传递有效parent
             self.Hide()
             DebugLogger.log("[DEBUG] 成功开启电源选项窗口并隐藏主窗口")
-        except Exception as e:
+        except (Exception, RuntimeError, NotImplementedError) as e:
             DebugLogger.log(f"[ERROR] 电源选项窗口开启失败: {str(e)}")
             self.restore_main_window()  # 确保恢复主窗口
             wx.MessageBox(f"[ERROR] 电源选项窗口开启失败: {str(e)}", "错误", wx.OK | wx.ICON_ERROR)
@@ -112,7 +112,7 @@ class MainWindow(wx.Frame):
     def on_cmd(self, event):
         threading.Thread(target=self.run_cmd_window, daemon=True).start()
 
-    def run_cmd_window(self, event):
+    def run_cmd_window(self):
         try:
             DebugLogger.log("[DEBUG] 正在启动CMD进程")
 
@@ -122,7 +122,7 @@ class MainWindow(wx.Frame):
                 creationflags=subprocess.CREATE_NEW_PROCESS_GROUP
             )
             process.wait()
-        except Exception as e:
+        except (Exception, RuntimeError, NotImplementedError) as e:
             DebugLogger.log(f"[ERROR] CMD进程启动失败: {str(e)}")
             wx.MessageBox(f"[ERROR] CMD进程启动失败: {str(e)}", "错误", wx.OK | wx.ICON_ERROR)
 
@@ -139,7 +139,7 @@ class MainWindow(wx.Frame):
             auth_mode = config.get('auth_mode', 0)
             self.btn_exit.Enable(auth_mode != 0)
             DebugLogger.log("[DEBUG] 成功更新按钮状态")
-        except Exception as e:
+        except (Exception, RuntimeError, NotImplementedError) as e:
             DebugLogger.log(f"[ERROR] 更新按钮状态失败: {str(e)}")
             wx.MessageBox(f"[ERROR] 更新按钮状态失败: {str(e)}", "错误", wx.OK | wx.ICON_ERROR)
             raise RuntimeError(f"[ERROR] 更新按钮状态失败: {str(e)}")

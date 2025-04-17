@@ -29,6 +29,6 @@ class CommandExecutor:
             error_msg = e.stderr.strip() or "Unknown error"
             DebugLogger.log(f"[ERROR] 命令失败: {error_msg}")
             return False, error_msg
-        except Exception as e:
+        except (Exception, RuntimeError, NotImplementedError) as e:
             DebugLogger.log(f"[ERROR] 系统错误: {str(e)}")
             return False, str(e)
