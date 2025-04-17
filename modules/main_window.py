@@ -105,9 +105,9 @@ class MainWindow(wx.Frame):
             self.Hide()
             DebugLogger.log("[DEBUG] 成功开启电源选项窗口并隐藏主窗口")
         except Exception as e:
-            DebugLogger.log(f"[ERROR] 打开电源选项窗口失败: {str(e)}")
+            DebugLogger.log(f"[ERROR] 电源选项窗口开启失败: {str(e)}")
             self.restore_main_window()  # 确保恢复主窗口
-            wx.MessageBox(f"[ERROR] 打开电源选项窗口失败: {str(e)}", "错误", wx.OK | wx.ICON_ERROR)
+            wx.MessageBox(f"[ERROR] 电源选项窗口开启失败: {str(e)}", "错误", wx.OK | wx.ICON_ERROR)
 
     def on_cmd(self, event):
         threading.Thread(target=self.run_cmd_window, daemon=True).start()
