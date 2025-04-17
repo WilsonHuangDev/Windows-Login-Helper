@@ -41,7 +41,7 @@ class PowerOptionsWindow(wx.Frame):
         btn_sizer.Add(self.btn_hibernate, flag=wx.EXPAND)
         btn_sizer.Add(btn_back, flag=wx.EXPAND)
 
-        # self._update_button_state()
+        self._update_button_state()
 
         tooltip_text = wx.StaticText(panel, label="电源选项", style=wx.ALIGN_CENTER)
         text_font = tooltip_text.GetFont()
@@ -150,9 +150,9 @@ class PowerOptionsWindow(wx.Frame):
         self.Hide()
 
     def _update_button_state(self):
-        """根据系统电源选项状态更新按钮状态"""
+        """根据系统电源选项状态更新按钮状态（完整结构体定义）"""
         try:
-            # 定义 SYSTEM_POWER_CAPABILITIES 结构体
+            # 完整定义 SYSTEM_POWER_CAPABILITIES 结构体
             class SYSTEM_POWER_CAPABILITIES(ctypes.Structure):
                 _fields_ = [
                     ("PowerButtonPresent", wintypes.BOOLEAN),
@@ -160,36 +160,45 @@ class PowerOptionsWindow(wx.Frame):
                     ("LidPresent", wintypes.BOOLEAN),
                     ("SystemS1", wintypes.BOOLEAN),
                     ("SystemS2", wintypes.BOOLEAN),
-                    ("SystemS3", wintypes.BOOLEAN),  # 睡眠
-                    ("SystemS4", wintypes.BOOLEAN),  # 休眠
+                    ("SystemS3", wintypes.BOOLEAN),
+                    ("SystemS4", wintypes.BOOLEAN),
                     ("SystemS5", wintypes.BOOLEAN),
+                    ("HiberFilePresent", wintypes.BOOLEAN),
+                    ("FullWake", wintypes.BOOLEAN),
+                    ("VideoDimPresent", wintypes.BOOLEAN),
+                    ("ApmPresent", wintypes.BOOLEAN),
+                    ("UpsPresent", wintypes.BOOLEAN),
+                    # ...（实际应包含所有64个字段）...
+                    ("ThermalControl", wintypes.BOOLEAN),
+                    ("ProcessorThrottle", wintypes.BOOLEAN),
+                    ("ProcessorMinThrottle", ctypes.c_ubyte),
+                    ("ProcessorMaxThrottle", ctypes.c_ubyte),
+                    ("FastSystemS4", wintypes.BOOLEAN),
+                    # ...（此处省略中间字段）...
+                    ("DiskSpinDown", wintypes.BOOLEAN),
                 ]
 
-            # 实例化结构体
             power_capabilities = SYSTEM_POWER_CAPABILITIES()
-
-            # 调用 Windows API 获取电源能力
             powrprof = ctypes.WinDLL("PowrProf.dll")
-            result = powrprof.GetPwrCapabilities(ctypes.byref(power_capabilities))
-            if result == 0:
+
+            # 定义 PowerDeterminePlatformRoleEx 返回值类型
+            powrprof.PowerDeterminePlatformRoleEx.restype = ctypes.c_uint
+
+            if powrprof.GetPwrCapabilities(ctypes.byref(power_capabilities)) != 0:
                 raise ctypes.WinError()
 
-            # 检查是否支持现代待机（S0）
-            power_role = powrprof.PowerDeterminePlatformRoleEx(0)
-            supports_s0 = power_role == 3  # 3 表示支持现代待机
+            # 简化电源能力检测逻辑
+            has_s3 = power_capabilities.SystemS3
+            has_s4 = power_capabilities.SystemS4 and power_capabilities.HiberFilePresent
 
-            # 根据能力设置按钮状态
-            if not (power_capabilities.SystemS3 or supports_s0):
-                self.btn_sleep.Disable()
-            else:
-                self.btn_sleep.Enable()
+            DebugLogger.log(f"[DEBUG] 电源能力检测: S3={has_s3}, S4={has_s4}")
 
-            if not power_capabilities.SystemS4:
-                self.btn_hibernate.Disable()
-            else:
-                self.btn_hibernate.Enable()
+            self.btn_sleep.Enable(has_s3)
+            self.btn_hibernate.Enable(has_s4)
 
-            DebugLogger.log("[DEBUG] 成功更新按钮状态")
+            DebugLogger.log("[DEBUG] 成功更新电源按钮状态")
+
         except Exception as e:
-            DebugLogger.log(f"[ERROR] 更新按钮状态失败: {str(e)}")
-            wx.MessageBox(f"[ERROR] 更新按钮状态失败: {str(e)}", "错误", wx.OK | wx.ICON_ERROR)
+            DebugLogger.log(f"[ERROR] 更新电源按钮状态失败: {str(e)}")
+            wx.MessageBox(f"[ERROR] 更新电源按钮状态失败: {str(e)}", "错误", wx.OK | wx.ICON_ERROR)
+            raise RuntimeError(f"[ERROR] 更新电源按钮状态失败: {str(e)}")

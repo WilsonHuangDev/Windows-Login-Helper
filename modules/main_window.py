@@ -84,6 +84,7 @@ class MainWindow(wx.Frame):
             DebugLogger.log("[DEBUG] 成功开启用户密码修改窗口并隐藏主窗口")
         except Exception as e:
             DebugLogger.log(f"[ERROR] 用户密码修改窗口开启失败: {str(e)}")
+            self.restore_main_window()  # 确保恢复主窗口
             wx.MessageBox(f"[ERROR] 用户密码修改窗口开启失败: {str(e)}", "错误", wx.OK | wx.ICON_ERROR)
 
     def on_user_create(self, event):
@@ -94,6 +95,7 @@ class MainWindow(wx.Frame):
             DebugLogger.log("[DEBUG] 成功开启用户创建窗口并隐藏主窗口")
         except Exception as e:
             DebugLogger.log(f"[ERROR] 创建用户窗口开启失败: {str(e)}")
+            self.restore_main_window()  # 确保恢复主窗口
             wx.MessageBox(f"[ERROR] 创建用户窗口开启失败: {str(e)}", "错误", wx.OK | wx.ICON_ERROR)
 
     def on_power_options(self, event):
@@ -101,15 +103,16 @@ class MainWindow(wx.Frame):
             from modules.power_options import PowerOptionsWindow
             PowerOptionsWindow(parent=self).Show()  # 传递有效parent
             self.Hide()
-            DebugLogger.log("[DEBUG] 主窗口已隐藏")
+            DebugLogger.log("[DEBUG] 成功开启电源选项窗口并隐藏主窗口")
         except Exception as e:
             DebugLogger.log(f"[ERROR] 打开电源选项窗口失败: {str(e)}")
+            self.restore_main_window()  # 确保恢复主窗口
             wx.MessageBox(f"[ERROR] 打开电源选项窗口失败: {str(e)}", "错误", wx.OK | wx.ICON_ERROR)
 
     def on_cmd(self, event):
         threading.Thread(target=self.run_cmd_window, daemon=True).start()
 
-    def run_cmd_window(self):
+    def run_cmd_window(self, event):
         try:
             DebugLogger.log("[DEBUG] 正在启动CMD进程")
 
@@ -139,6 +142,7 @@ class MainWindow(wx.Frame):
         except Exception as e:
             DebugLogger.log(f"[ERROR] 更新按钮状态失败: {str(e)}")
             wx.MessageBox(f"[ERROR] 更新按钮状态失败: {str(e)}", "错误", wx.OK | wx.ICON_ERROR)
+            raise RuntimeError(f"[ERROR] 更新按钮状态失败: {str(e)}")
 
     def on_exit(self, event):
         """安全退出至认证窗口"""
