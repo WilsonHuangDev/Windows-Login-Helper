@@ -40,12 +40,13 @@ class ProcessManager:
     @staticmethod
     def main_loop():
         try:
-            # 确保只创建一个 wx.App 实例
             app = wx.App()
+            app.SetExitOnFrameDelete(False)  # 防止最后一个窗口关闭时退出
 
             logger = DebugLogger()  # 实例化（此时才会创建进程）
 
             from modules.login_window import LoginWindow
+            # 初始化窗口管理器
             WindowManager().switch_window(LoginWindow)
             app.MainLoop()
 

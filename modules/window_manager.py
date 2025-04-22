@@ -1,5 +1,7 @@
 import wx
 
+from modules.debug_window import DebugLogger
+
 
 class WindowManager:
     _instance = None
@@ -11,14 +13,23 @@ class WindowManager:
         return cls._instance
 
     def switch_window(self, window_class, *args, **kwargs):
-        """切换窗口并自动销毁前一个窗口"""
-        if self.current_window:
-            self.current_window.Destroy()
+        """安全的窗口切换方法"""
+        try:
+            DebugLogger.log(f"[WINDOW] 正在切换到 {window_class.__name__}")
 
-        self.current_window = window_class(*args, **kwargs)
-        self.current_window.Show()
-        return self.current_window
+            # 先创建新窗口
+            new_window = window_class(*args, **kwargs)
+            new_window.Show()
 
-    def get_current(self):
-        """获取当前活动窗口"""
-        return self.current_window
+            # 再销毁旧窗口
+            if self.current_window:
+                DebugLogger.log(f"[WINDOW] 正在销毁 {self.current_window.__class__.__name__}")
+                self.current_window.Destroy()
+
+            self.current_window = new_window
+            DebugLogger.log(f"[WINDOW] 成功切换到 {window_class.__name__}")
+            return new_window
+
+        except Exception as e:
+            DebugLogger.log(f"[WINDOW] 窗口切换失败: {str(e)}")
+            raise

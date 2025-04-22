@@ -113,5 +113,5 @@ class UserCreator(wx.Frame):
 
     def on_return(self, event):
         from modules.main_window import MainWindow
+        DebugLogger.log("[DEBUG] 正在从创建用户窗口返回主窗口")
         WindowManager().switch_window(MainWindow)
-        self.Destroy()

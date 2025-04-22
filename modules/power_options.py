@@ -190,8 +190,8 @@ class PowerOptionsWindow(wx.Frame):
 
     def on_return(self, event):
         from modules.main_window import MainWindow
+        DebugLogger.log("[DEBUG] 正在从电源选项窗口返回主窗口")
         WindowManager().switch_window(MainWindow)
-        self.Destroy()
 
     def _update_button_state(self):
         try:

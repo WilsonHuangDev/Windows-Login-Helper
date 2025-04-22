@@ -80,20 +80,20 @@ class MainWindow(wx.Frame):
     def on_password(self, event):
         try:
             from PasswdChanger.passwd_changer import PasswordChanger
+            DebugLogger.log("[DEBUG] 正在尝试开启修改用户密码窗口")
             WindowManager().switch_window(PasswordChanger)
-            self.Destroy()
-            DebugLogger.log("[DEBUG] 成功开启用户密码修改窗口并隐藏主窗口")
-        except (Exception, RuntimeError, NotImplementedError) as e:
-            DebugLogger.log(f"[ERROR] 用户密码修改窗口开启失败: {str(e)}")
-            self.restore_main_window()  # 确保恢复主窗口
-            wx.MessageBox(f"[ERROR] 用户密码修改窗口开启失败: {str(e)}", "错误", wx.OK | wx.ICON_ERROR)
+            DebugLogger.log("[DEBUG] 成功开启修改用户密码窗口并关闭主窗口")
+        except Exception as e:
+            DebugLogger.log(f"[ERROR] 修改用户密码窗口开启失败: {str(e)}")
+            self.restore_main_window()
+            wx.MessageBox(f"[ERROR] 修改用户密码窗口开启失败: {str(e)}", "错误", wx.OK | wx.ICON_ERROR)
 
     def on_user_create(self, event):
         try:
             from PasswdChanger.user_creator import UserCreator
+            DebugLogger.log("[DEBUG] 正在尝试开启创建用户窗口")
             WindowManager().switch_window(UserCreator)
-            self.Destroy()
-            DebugLogger.log("[DEBUG] 成功开启用户创建窗口并隐藏主窗口")
+            DebugLogger.log("[DEBUG] 成功开启创建用户窗口并关闭主窗口")
         except (Exception, RuntimeError, NotImplementedError) as e:
             DebugLogger.log(f"[ERROR] 创建用户窗口开启失败: {str(e)}")
             self.restore_main_window()  # 确保恢复主窗口
@@ -102,13 +102,13 @@ class MainWindow(wx.Frame):
     def on_power_options(self, event):
         try:
             from modules.power_options import PowerOptionsWindow
+            DebugLogger.log("[DEBUG] 正在尝试开启电源选项窗口")
             WindowManager().switch_window(PowerOptionsWindow)
-            self.Destroy()  # 销毁当前主窗口
-            DebugLogger.log("[DEBUG] 成功开启电源选项窗口并销毁主窗口")
-        except (Exception, RuntimeError, NotImplementedError) as e:
+            DebugLogger.log("[DEBUG] 成功开启电源选项窗口并关闭主窗口")
+        except Exception as e:
             DebugLogger.log(f"[ERROR] 电源选项窗口开启失败: {str(e)}")
-            self.restore_main_window()  # 确保恢复主窗口
-            wx.MessageBox(f"[ERROR] 电源选项窗口开启失败: {str(e)}", "错误", wx.OK | wx.ICON_ERROR)
+            self.restore_main_window()
+            wx.MessageBox(f"电源选项窗口开启失败: {str(e)}", "错误", wx.OK | wx.ICON_ERROR)
 
     def on_cmd(self, event):
         threading.Thread(target=self.run_cmd_window, daemon=True).start()

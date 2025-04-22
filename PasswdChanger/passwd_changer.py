@@ -69,8 +69,8 @@ class PasswordChanger(wx.Frame):
 
     def on_return(self, event):
         from modules.main_window import MainWindow
+        DebugLogger.log("[DEBUG] 正在从修改用户密码窗口返回主窗口")
         WindowManager().switch_window(MainWindow)
-        self.Destroy()
 
     def on_change(self, event):
         try:
@@ -107,5 +107,4 @@ class PasswordChanger(wx.Frame):
 
 def run():
     app = wx.App()
-    PasswordChanger().Show()
     app.MainLoop()
