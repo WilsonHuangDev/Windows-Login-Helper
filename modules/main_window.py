@@ -12,8 +12,6 @@ class MainWindow(wx.Frame):
     def __init__(self):
         style = wx.CAPTION | wx.STAY_ON_TOP | wx.CLOSE_BOX
         super().__init__(None, title="Windows 登录辅助工具", size=(250, 400), style=style)
-        # 新增实例引用保持
-        self._main_window_instance = self
         self.SetIcon(wx.Icon("Assets/icon.ico"))  # 设置窗口图标
         self.init_ui()
         self._init_timer()
@@ -87,9 +85,8 @@ class MainWindow(wx.Frame):
             else:
                 raise RuntimeError("修改用户密码窗口开启失败")
 
-        except Exception as e:
+        except (Exception, RuntimeError) as e:
             DebugLogger.log(f"[ERROR] 修改用户密码窗口开启失败: {str(e)}")
-            self.restore_main_window()
             wx.MessageBox(f"[ERROR] 修改用户密码窗口开启失败: {str(e)}", "错误", wx.OK | wx.ICON_ERROR)
 
     def on_user_create(self, event):
@@ -102,9 +99,8 @@ class MainWindow(wx.Frame):
             else:
                 raise RuntimeError("创建用户窗口开启失败")
 
-        except (Exception, RuntimeError, NotImplementedError) as e:
+        except (Exception, RuntimeError) as e:
             DebugLogger.log(f"[ERROR] 创建用户窗口开启失败: {str(e)}")
-            self.restore_main_window()  # 确保恢复主窗口
             wx.MessageBox(f"[ERROR] 创建用户窗口开启失败: {str(e)}", "错误", wx.OK | wx.ICON_ERROR)
 
     def on_power_options(self, event):
@@ -117,9 +113,8 @@ class MainWindow(wx.Frame):
             else:
                 raise RuntimeError("电源选项窗口开启失败")
 
-        except Exception as e:
+        except (Exception, RuntimeError) as e:
             DebugLogger.log(f"[ERROR] 电源选项窗口开启失败: {str(e)}")
-            self.restore_main_window()
             wx.MessageBox(f"电源选项窗口开启失败: {str(e)}", "错误", wx.OK | wx.ICON_ERROR)
 
     def on_cmd(self, event):
@@ -138,12 +133,6 @@ class MainWindow(wx.Frame):
         except (Exception, RuntimeError, NotImplementedError) as e:
             DebugLogger.log(f"[ERROR] CMD进程启动失败: {str(e)}")
             wx.MessageBox(f"[ERROR] CMD进程启动失败: {str(e)}", "错误", wx.OK | wx.ICON_ERROR)
-
-    def restore_main_window(self):
-        if not self.IsShown():
-            self.Show()
-            self.Raise()
-            DebugLogger.log("[DEBUG] 成功恢复主窗口")
 
     def _update_button_state(self):
         """根据认证模式更新按钮状态"""
@@ -167,9 +156,8 @@ class MainWindow(wx.Frame):
             else:
                 raise RuntimeError("认证窗口开启失败")
 
-        except Exception as e:
+        except (Exception, RuntimeError) as e:
             DebugLogger.log(f"[ERROR] 认证窗口开启失败: {str(e)}")
-            self.restore_main_window()
             wx.MessageBox(f"认证窗口开启失败: {str(e)}", "错误", wx.OK | wx.ICON_ERROR)
 
 
