@@ -40,14 +40,23 @@ class ProcessManager:
     @staticmethod
     def main_loop():
         try:
-            app = wx.App()
+            # 确保单例App实例
+            if not wx.GetApp():
+                app = wx.App()
+            else:
+                app = wx.GetApp()
+
             app.SetExitOnFrameDelete(False)  # 防止最后一个窗口关闭时退出
 
             logger = DebugLogger()  # 实例化（此时才会创建进程）
 
-            from modules.login_window import LoginWindow
             # 初始化窗口管理器
-            WindowManager().switch_window(LoginWindow)
+            from modules.login_window import LoginWindow
+
+            # 首次窗口显示
+            if not WindowManager().current_window:
+                WindowManager().switch_window(LoginWindow)
+
             app.MainLoop()
 
         except Exception as e:

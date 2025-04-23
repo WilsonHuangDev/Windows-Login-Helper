@@ -151,7 +151,6 @@ class LoginWindow(wx.Frame):
                 self._debug_print("[DEBUG] 验证成功")
                 from modules.main_window import MainWindow
                 WindowManager().switch_window(MainWindow)
-                self.Destroy()
                 self._debug_print("[DEBUG] 成功开启主窗口并销毁认证窗口")
             else:
                 self._debug_print("[WARNING] 认证失败")
@@ -166,5 +165,4 @@ class LoginWindow(wx.Frame):
         self._debug_print("[DEBUG] 跳过登录流程")
         from modules.main_window import MainWindow
         WindowManager().switch_window(MainWindow)
-        self.Destroy()
         self._debug_print("[DEBUG] 成功跳过认证窗口并开启主窗口")

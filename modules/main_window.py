@@ -80,9 +80,13 @@ class MainWindow(wx.Frame):
     def on_password(self, event):
         try:
             from PasswdChanger.passwd_changer import PasswordChanger
+
             DebugLogger.log("[DEBUG] 正在尝试开启修改用户密码窗口")
-            WindowManager().switch_window(PasswordChanger)
-            DebugLogger.log("[DEBUG] 成功开启修改用户密码窗口并关闭主窗口")
+            if WindowManager().switch_window(PasswordChanger):
+                DebugLogger.log("[DEBUG] 成功开启修改用户密码窗口并关闭主窗口")
+            else:
+                raise RuntimeError("修改用户密码窗口开启失败")
+
         except Exception as e:
             DebugLogger.log(f"[ERROR] 修改用户密码窗口开启失败: {str(e)}")
             self.restore_main_window()
@@ -91,9 +95,13 @@ class MainWindow(wx.Frame):
     def on_user_create(self, event):
         try:
             from PasswdChanger.user_creator import UserCreator
+
             DebugLogger.log("[DEBUG] 正在尝试开启创建用户窗口")
-            WindowManager().switch_window(UserCreator)
-            DebugLogger.log("[DEBUG] 成功开启创建用户窗口并关闭主窗口")
+            if WindowManager().switch_window(UserCreator):
+                DebugLogger.log("[DEBUG] 成功开启创建用户窗口并关闭主窗口")
+            else:
+                raise RuntimeError("创建用户窗口开启失败")
+
         except (Exception, RuntimeError, NotImplementedError) as e:
             DebugLogger.log(f"[ERROR] 创建用户窗口开启失败: {str(e)}")
             self.restore_main_window()  # 确保恢复主窗口
@@ -102,9 +110,13 @@ class MainWindow(wx.Frame):
     def on_power_options(self, event):
         try:
             from modules.power_options import PowerOptionsWindow
+
             DebugLogger.log("[DEBUG] 正在尝试开启电源选项窗口")
-            WindowManager().switch_window(PowerOptionsWindow)
-            DebugLogger.log("[DEBUG] 成功开启电源选项窗口并关闭主窗口")
+            if WindowManager().switch_window(PowerOptionsWindow):
+                DebugLogger.log("[DEBUG] 成功开启电源选项窗口并关闭主窗口")
+            else:
+                raise RuntimeError("电源选项窗口开启失败")
+
         except Exception as e:
             DebugLogger.log(f"[ERROR] 电源选项窗口开启失败: {str(e)}")
             self.restore_main_window()
@@ -146,16 +158,19 @@ class MainWindow(wx.Frame):
             raise RuntimeError(f"[ERROR] 更新按钮状态失败: {str(e)}")
 
     def on_exit(self, event):
-        """安全退出至认证窗口"""
-
-        def safe_exit():
+        try:
             from modules.login_window import LoginWindow
-            login_win = LoginWindow()
-            login_win.Show()
-            self.Destroy()  # 销毁主窗口
 
-        wx.CallAfter(safe_exit)  # 确保在主线程执行
-        DebugLogger.log("[DEBUG] 已安全退出")
+            DebugLogger.log("[DEBUG] 正在尝试开启认证窗口")
+            if WindowManager().switch_window(LoginWindow):
+                DebugLogger.log("[DEBUG] 成功退出至认证窗口并关闭主窗口")
+            else:
+                raise RuntimeError("认证窗口开启失败")
+
+        except Exception as e:
+            DebugLogger.log(f"[ERROR] 认证窗口开启失败: {str(e)}")
+            self.restore_main_window()
+            wx.MessageBox(f"认证窗口开启失败: {str(e)}", "错误", wx.OK | wx.ICON_ERROR)
 
 
 def run():
