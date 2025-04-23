@@ -2,7 +2,17 @@
 
 # 构建脚本说明
 echo "=== Windows-Login-Helper 打包脚本 ==="
+
+# 检查是否传入版本号
+if [ -z "$1" ]; then
+    echo "错误: 未指定版本号!"
+    exit 1
+fi
+
+VERSION=$1
+
 echo "正在执行打包操作，请稍候..."
+echo "版本号: $VERSION"
 
 # 清理旧构建文件
 echo "清理旧构建文件..."
@@ -11,10 +21,14 @@ rm -rf ./dist 2> /dev/null
 # 执行打包命令（关键配置）
 python -m nuitka \
 --standalone \
---windows-console-mode=disable \
+--windows-console-mode=attach \
 --windows-icon-from-ico=./Assets/icon.ico \
+--company-name=Wilson.Huang \
+--product-name="Windows 登录辅助工具" \
+--product-version="$VERSION" \
 --include-package=PasswdChanger \
 --include-package=modules \
+--include-data-file="./Assets/**/*.ico=Assets/" \
 --output-dir=./dist/Windows-Login-Helper \
 --output-filename=WinLoginHelper \
 --remove-output \
