@@ -49,6 +49,10 @@ class PowerOptionsWindow(wx.Frame):
         style = wx.CAPTION | wx.STAY_ON_TOP | wx.CLOSE_BOX
         super().__init__(None, title="Windows 登录辅助工具", size=(250, 360), style=style)
         self.SetIcon(wx.Icon("Assets/icon.ico"))  # 设置窗口图标
+
+        # 绑定关闭窗口事件
+        self.Bind(wx.EVT_CLOSE, self.on_close)
+
         self.init_ui()
         self.Center()
         DebugLogger.log("[DEBUG] PowerOptionsWindow 初始化完成")
@@ -192,6 +196,11 @@ class PowerOptionsWindow(wx.Frame):
         from modules.main_window import MainWindow
         DebugLogger.log("[DEBUG] 正在从电源选项窗口返回主窗口")
         WindowManager().switch_window(MainWindow)
+
+    def on_close(self, event):
+        """处理关闭窗口事件"""
+        DebugLogger.log("[DEBUG] 用户关闭电源选项窗口")
+        WindowManager().switch_window(None)
 
     def _update_button_state(self):
         try:

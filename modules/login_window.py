@@ -21,6 +21,9 @@ class LoginWindow(wx.Frame):
             self.bypass_login()
             return
 
+        # 绑定关闭窗口事件
+        self.Bind(wx.EVT_CLOSE, self.on_close)
+
         self.init_ui()
         self._init_timer()
         self.Center()
@@ -164,3 +167,8 @@ class LoginWindow(wx.Frame):
         self._debug_print("[DEBUG] 跳过登录流程")
         from modules.main_window import MainWindow
         WindowManager().switch_window(MainWindow)
+
+    def on_close(self, event):
+        """处理关闭窗口事件"""
+        self._debug_print("[DEBUG] 用户关闭认证窗口")
+        WindowManager().switch_window(None)

@@ -19,6 +19,11 @@ class WindowManager:
         self.main_window = main_window
 
     def switch_window(self, window_class, *args, **kwargs):
+        """支持传入 None 表示退出程序"""
+        if window_class is None:
+            wx.CallAfter(self._exit_application)  # 通过事件队列安全退出
+            return True
+
         """安全的窗口切换方法（带状态保护）"""
         try:
             DebugLogger.log(f"[WINDOW] 正在切换窗口到 {window_class.__name__}")
@@ -88,3 +93,10 @@ class WindowManager:
                 window.Destroy()
         except Exception as e:
             DebugLogger.log(f"[WINDOW] 窗口销毁失败: {str(e)}")
+
+    def _exit_application(self):
+        """安全退出应用程序"""
+        if self.current_window:
+            self.current_window.Destroy()
+        DebugLogger.log("[DEBUG] 结束运行程序")
+        wx.GetApp().ExitMainLoop()

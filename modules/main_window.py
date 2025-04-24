@@ -13,6 +13,10 @@ class MainWindow(wx.Frame):
         style = wx.CAPTION | wx.STAY_ON_TOP | wx.CLOSE_BOX
         super().__init__(None, title="Windows 登录辅助工具", size=(250, 400), style=style)
         self.SetIcon(wx.Icon("Assets/icon.ico"))  # 设置窗口图标
+
+        # 绑定关闭窗口事件
+        self.Bind(wx.EVT_CLOSE, self.on_close)
+
         self.init_ui()
         self._init_timer()
         self.Center()
@@ -159,6 +163,11 @@ class MainWindow(wx.Frame):
         except (Exception, RuntimeError) as e:
             DebugLogger.log(f"[ERROR] 认证窗口开启失败: {str(e)}")
             wx.MessageBox(f"认证窗口开启失败: {str(e)}", "错误", wx.OK | wx.ICON_ERROR)
+
+    def on_close(self, event):
+        """处理关闭窗口事件"""
+        DebugLogger.log("[DEBUG] 用户关闭主窗口")
+        WindowManager().switch_window(None)
 
 
 def run():

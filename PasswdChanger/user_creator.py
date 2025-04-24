@@ -9,6 +9,10 @@ class UserCreator(wx.Frame):
         style = wx.CAPTION | wx.STAY_ON_TOP | wx.CLOSE_BOX
         super().__init__(None, title="Windows 登录辅助工具", size=(320, 280), style=style)
         self.SetIcon(wx.Icon("Assets/icon.ico"))  # 设置窗口图标
+
+        # 绑定关闭窗口事件
+        self.Bind(wx.EVT_CLOSE, self.on_close)
+
         self.init_ui()
         self.Center()
         DebugLogger.log("[DEBUG] UserCreator 初始化完成")
@@ -115,3 +119,8 @@ class UserCreator(wx.Frame):
         from modules.main_window import MainWindow
         DebugLogger.log("[DEBUG] 正在从创建用户窗口返回主窗口")
         WindowManager().switch_window(MainWindow)
+
+    def on_close(self, event):
+        """处理关闭窗口事件"""
+        DebugLogger.log("[DEBUG] 用户关闭创建用户窗口")
+        WindowManager().switch_window(None)

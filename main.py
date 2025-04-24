@@ -67,8 +67,7 @@ class ProcessManager:
 
 
 if __name__ == "__main__":
-    DebugLogger.log("[DEBUG] 程序开始运行")
+    DebugLogger.log("[DEBUG] 启动运行程序")
     if not ProcessManager.require_admin():
         sys.exit(1)
     ProcessManager.main_loop()
-    DebugLogger.log("[DEBUG] 程序结束")
