@@ -28,8 +28,8 @@ python -m nuitka \
 --product-version="$VERSION" \
 --include-package=PasswdChanger \
 --include-package=modules \
---include-data-file="./Assets/**/*.ico=Assets/" \
---include-data-file="./Installer/*.bat=/" \
+--include-data-file="./Assets/**/*.ico=./Assets/" \
+--include-data-file="./Installer/*.bat=./" \
 --output-dir=./dist/Windows-Login-Helper \
 --output-filename=WinLoginHelper \
 --remove-output \
