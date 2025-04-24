@@ -95,7 +95,7 @@ class DebugWindow(wx.Frame):
         style = wx.CAPTION | wx.STAY_ON_TOP | wx.CLOSE_BOX
         super().__init__(None, title="调试信息输出", size=(700, 500), style=style)
         self.queue = queue
-        self.SetIcon(wx.Icon("Assets/icon.ico"))  # 设置窗口图标
+        self.SetIcon(wx.Icon("./Assets/icon.ico"))  # 设置窗口图标
         self.init_ui()
         self.timer = wx.Timer(self)
         self.Bind(wx.EVT_TIMER, self.update_logs, self.timer)

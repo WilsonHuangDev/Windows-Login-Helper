@@ -8,7 +8,7 @@ class UserCreator(wx.Frame):
     def __init__(self):
         style = wx.CAPTION | wx.STAY_ON_TOP | wx.CLOSE_BOX
         super().__init__(None, title="Windows 登录辅助工具", size=(320, 280), style=style)
-        self.SetIcon(wx.Icon("Assets/icon.ico"))  # 设置窗口图标
+        self.SetIcon(wx.Icon("./Assets/icon.ico"))  # 设置窗口图标
 
         # 绑定关闭窗口事件
         self.Bind(wx.EVT_CLOSE, self.on_close)
