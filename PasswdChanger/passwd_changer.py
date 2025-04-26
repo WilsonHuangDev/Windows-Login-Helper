@@ -4,20 +4,6 @@ from modules.debug_window import DebugLogger
 from modules.window_manager import WindowManager
 
 
-class SecurePasswordTextCtrl(wx.TextCtrl):
-    def __init__(self, parent):
-        super().__init__(
-            parent,
-            style=wx.TE_PASSWORD | wx.TE_PROCESS_ENTER,
-            size=(200, -1))
-        self.Bind(wx.EVT_KEY_DOWN, self.on_key_down)
-
-    def on_key_down(self, event):
-        if event.ControlDown() and event.GetKeyCode() in (ord('C'), ord('V')):
-            return
-        event.Skip()
-
-
 class PasswordChanger(wx.Frame):
     def __init__(self):
         style = wx.CAPTION | wx.STAY_ON_TOP | wx.CLOSE_BOX
@@ -40,11 +26,11 @@ class PasswordChanger(wx.Frame):
         grid.Add(self.username, 0, wx.EXPAND)
 
         grid.Add(wx.StaticText(panel, label="新密码："), 0, wx.ALIGN_CENTER_VERTICAL)
-        self.new_pass = SecurePasswordTextCtrl(panel)
+        self.new_pass = wx.TextCtrl(panel, style=wx.TE_PASSWORD, size=(200, -1))
         grid.Add(self.new_pass, 0, wx.EXPAND)
 
         grid.Add(wx.StaticText(panel, label="确认密码："), 0, wx.ALIGN_CENTER_VERTICAL)
-        self.confirm_pass = SecurePasswordTextCtrl(panel)
+        self.confirm_pass = wx.TextCtrl(panel, style=wx.TE_PASSWORD, size=(200, -1))
         grid.Add(self.confirm_pass, 0, wx.EXPAND)
 
         btn_box = wx.BoxSizer(wx.HORIZONTAL)
@@ -83,6 +69,7 @@ class PasswordChanger(wx.Frame):
 
     def on_change(self, event):
         try:
+            DebugLogger.log("[DEBUG] 开始执行 修改用户密码 操作")
             from modules.cmd_executor import CommandExecutor
             username = self.username.Value.strip()
             new_pass = self.new_pass.Value
@@ -91,25 +78,30 @@ class PasswordChanger(wx.Frame):
             if not self.validate_input(username, new_pass, confirm_pass):
                 return
 
+            DebugLogger.log(f"[DEBUG] 被修改密码的用户名: {username}")
             success, msg = CommandExecutor.run_as_admin(["net", "user", username, new_pass])
 
             # 调试信息已在CommandExecutor中处理
             if success:
-                wx.MessageBox("密码修改成功!", "成功", wx.OK | wx.ICON_INFORMATION)
+                DebugLogger.log("[DEBUG] 修改用户密码操作成功")
+                wx.MessageBox("密码修改成功!", "成功", wx.OK | wx.ICON_INFORMATION, parent=self)
             else:
-                wx.MessageBox(f"[ERROR] 操作失败: {msg}", "错误", wx.OK | wx.ICON_ERROR)
+                wx.MessageBox(f"[ERROR] 操作失败: {msg}", "错误", wx.OK | wx.ICON_ERROR, parent=self)
         except (Exception, RuntimeError, NotImplementedError) as e:
-            wx.MessageBox(f"[ERROR] 系统错误: {str(e)}", "错误", wx.OK | wx.ICON_ERROR)
+            wx.MessageBox(f"[ERROR] 系统错误: {str(e)}", "错误", wx.OK | wx.ICON_ERROR, parent=self)
         finally:
             self.new_pass.Value = ""
             self.confirm_pass.Value = ""
+            DebugLogger.log("[DEBUG] 成功安全清除密码记录")
 
     def validate_input(self, username, p1, p2):
         if not username:
-            wx.MessageBox("用户名不能为空!", "错误", wx.OK | wx.ICON_ERROR)
+            DebugLogger.log("[ERROR] 用户名为空")
+            wx.MessageBox("用户名不能为空!", "错误", wx.OK | wx.ICON_ERROR, parent=self)
             return False
         if p1 != p2:
-            wx.MessageBox("两次输入的密码不一致!", "错误", wx.OK | wx.ICON_ERROR)
+            DebugLogger.log("[ERROR] 密码输入不一致")
+            wx.MessageBox("两次输入的密码不一致!", "错误", wx.OK | wx.ICON_ERROR, parent=self)
             return False
         return True
 

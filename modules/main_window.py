@@ -1,6 +1,4 @@
 import datetime
-import subprocess
-import threading
 import wx
 
 from modules.debug_window import DebugLogger
@@ -28,15 +26,15 @@ class MainWindow(wx.Frame):
 
         # 按钮区
         btn_sizer = wx.FlexGridSizer(rows=5, cols=1, vgap=10, hgap=30)
-        btn_pass = wx.Button(panel, label="修改用户密码", size=(130, 40))
-        btn_user = wx.Button(panel, label="创建用户", size=(130, 40))
-        btn_cmd = wx.Button(panel, label="CMD 命令行", size=(130, 40))
-        btn_power = wx.Button(panel, label="电源选项", size=(130, 40))
-        self.btn_exit = wx.Button(panel, label="退出登录", size=(130, 40))
+        btn_pass = wx.Button(panel, label="修改用户密码", size=(150, 40))
+        btn_user = wx.Button(panel, label="创建用户", size=(150, 40))
+        btn_tools = wx.Button(panel, label="更多功能", size=(150, 40))
+        btn_power = wx.Button(panel, label="电源选项", size=(150, 40))
+        self.btn_exit = wx.Button(panel, label="退出登录", size=(150, 40))
 
         btn_sizer.Add(btn_pass, flag=wx.EXPAND)
         btn_sizer.Add(btn_user, flag=wx.EXPAND)
-        btn_sizer.Add(btn_cmd, flag=wx.EXPAND)
+        btn_sizer.Add(btn_tools, flag=wx.EXPAND)
         btn_sizer.Add(btn_power, flag=wx.EXPAND)
         btn_sizer.Add(self.btn_exit, flag=wx.EXPAND)
 
@@ -63,7 +61,7 @@ class MainWindow(wx.Frame):
 
         btn_pass.Bind(wx.EVT_BUTTON, self.on_password)
         btn_user.Bind(wx.EVT_BUTTON, self.on_user_create)
-        btn_cmd.Bind(wx.EVT_BUTTON, self.on_cmd)
+        btn_tools.Bind(wx.EVT_BUTTON, self.on_tools)
         btn_power.Bind(wx.EVT_BUTTON, self.on_power_options)
         self.btn_exit.Bind(wx.EVT_BUTTON, self.on_exit)
 
@@ -73,7 +71,7 @@ class MainWindow(wx.Frame):
         self.Bind(wx.EVT_TIMER, self._update_time_display, self.timer)
         self.timer.Start(5)
         self._update_time_display(None)  # 立即更新一次
-        DebugLogger.log("[DEBUG] 时间显示定时器初始化完成")
+        DebugLogger.log("[DEBUG] MainWindow 时间显示定时器初始化完成")
 
     def _update_time_display(self, event):
         current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -91,7 +89,7 @@ class MainWindow(wx.Frame):
 
         except (Exception, RuntimeError) as e:
             DebugLogger.log(f"[ERROR] 修改用户密码窗口开启失败: {str(e)}")
-            wx.MessageBox(f"[ERROR] 修改用户密码窗口开启失败: {str(e)}", "错误", wx.OK | wx.ICON_ERROR)
+            wx.MessageBox(f"[ERROR] 修改用户密码窗口开启失败: {str(e)}", "错误", wx.OK | wx.ICON_ERROR, parent=self)
 
     def on_user_create(self, event):
         try:
@@ -105,7 +103,7 @@ class MainWindow(wx.Frame):
 
         except (Exception, RuntimeError) as e:
             DebugLogger.log(f"[ERROR] 创建用户窗口开启失败: {str(e)}")
-            wx.MessageBox(f"[ERROR] 创建用户窗口开启失败: {str(e)}", "错误", wx.OK | wx.ICON_ERROR)
+            wx.MessageBox(f"[ERROR] 创建用户窗口开启失败: {str(e)}", "错误", wx.OK | wx.ICON_ERROR, parent=self)
 
     def on_power_options(self, event):
         try:
@@ -119,24 +117,21 @@ class MainWindow(wx.Frame):
 
         except (Exception, RuntimeError) as e:
             DebugLogger.log(f"[ERROR] 电源选项窗口开启失败: {str(e)}")
-            wx.MessageBox(f"电源选项窗口开启失败: {str(e)}", "错误", wx.OK | wx.ICON_ERROR)
+            wx.MessageBox(f"电源选项窗口开启失败: {str(e)}", "错误", wx.OK | wx.ICON_ERROR, parent=self)
 
-    def on_cmd(self, event):
-        threading.Thread(target=self.run_cmd_window, daemon=True).start()
-
-    def run_cmd_window(self):
+    def on_tools(self, event):
         try:
-            DebugLogger.log("[DEBUG] 正在启动CMD进程")
+            from modules.tools_window import ToolsWindow
 
-            process = subprocess.Popen(
-                "start cmd",
-                shell=True,
-                creationflags=subprocess.CREATE_NEW_PROCESS_GROUP
-            )
-            process.wait()
-        except (Exception, RuntimeError, NotImplementedError) as e:
-            DebugLogger.log(f"[ERROR] CMD进程启动失败: {str(e)}")
-            wx.MessageBox(f"[ERROR] CMD进程启动失败: {str(e)}", "错误", wx.OK | wx.ICON_ERROR)
+            DebugLogger.log("[DEBUG] 正在尝试开启更多功能窗口")
+            if WindowManager().switch_window(ToolsWindow):
+                DebugLogger.log("[DEBUG] 成功开启更多功能窗口并关闭主窗口")
+            else:
+                raise RuntimeError("更多功能窗口开启失败")
+
+        except (Exception, RuntimeError) as e:
+            DebugLogger.log(f"[ERROR] 更多功能窗口开启失败: {str(e)}")
+            wx.MessageBox(f"更多功能窗口开启失败: {str(e)}", "错误", wx.OK | wx.ICON_ERROR, parent=self)
 
     def _update_button_state(self):
         """根据认证模式更新按钮状态"""
@@ -147,7 +142,7 @@ class MainWindow(wx.Frame):
             DebugLogger.log("[DEBUG] 成功更新按钮状态")
         except (Exception, RuntimeError, NotImplementedError) as e:
             DebugLogger.log(f"[ERROR] 更新按钮状态失败: {str(e)}")
-            wx.MessageBox(f"[ERROR] 更新按钮状态失败: {str(e)}", "错误", wx.OK | wx.ICON_ERROR)
+            wx.MessageBox(f"[ERROR] 更新按钮状态失败: {str(e)}", "错误", wx.OK | wx.ICON_ERROR, parent=self)
             raise RuntimeError(f"[ERROR] 更新按钮状态失败: {str(e)}")
 
     def on_exit(self, event):
@@ -162,7 +157,7 @@ class MainWindow(wx.Frame):
 
         except (Exception, RuntimeError) as e:
             DebugLogger.log(f"[ERROR] 认证窗口开启失败: {str(e)}")
-            wx.MessageBox(f"认证窗口开启失败: {str(e)}", "错误", wx.OK | wx.ICON_ERROR)
+            wx.MessageBox(f"认证窗口开启失败: {str(e)}", "错误", wx.OK | wx.ICON_ERROR, parent=self)
 
     def on_close(self, event):
         """处理关闭窗口事件"""
@@ -172,5 +167,4 @@ class MainWindow(wx.Frame):
 
 def run():
     app = wx.App()
-    MainWindow().Show()
     app.MainLoop()

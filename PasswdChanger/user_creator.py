@@ -74,6 +74,7 @@ class UserCreator(wx.Frame):
 
     def on_create(self, event):
         try:
+            DebugLogger.log("[DEBUG] 开始执行 创建用户 操作")
             from modules.cmd_executor import CommandExecutor
             username = self.username.Value.strip()
             password = self.password.Value
@@ -87,12 +88,17 @@ class UserCreator(wx.Frame):
             is_admin = (group == "管理员")
 
             # 创建用户命令
+            DebugLogger.log(
+                f"[DEBUG] 新建用户名: {username}\n"
+                f"   用户组: {group}"
+            )
             success, msg = CommandExecutor.run_as_admin(["net", "user", username, password, "/add"])
             if not success:
                 raise Exception(msg)
 
             # 设置管理员权限命令
             if is_admin:
+                DebugLogger.log("[DEBUG] 开始设置 管理员 用户组")
                 success, msg = CommandExecutor.run_as_admin(
                     ["net", "localgroup", "Users", username, "/delete"]
                 )
@@ -102,16 +108,23 @@ class UserCreator(wx.Frame):
                 if not success:
                     raise Exception(msg)
 
-            wx.MessageBox("用户创建成功!", "成功", wx.OK | wx.ICON_INFORMATION)
+            DebugLogger.log("[DEBUG] 创建用户操作成功")
+            wx.MessageBox("用户创建成功!", "成功", wx.OK | wx.ICON_INFORMATION, parent=self)
         except (Exception, RuntimeError, NotImplementedError) as e:
-            wx.MessageBox(f"[ERROR] 创建失败: {str(e)}", "错误", wx.OK | wx.ICON_ERROR)
+            wx.MessageBox(f"[ERROR] 创建失败: {str(e)}", "错误", wx.OK | wx.ICON_ERROR, parent=self)
+        finally:
+            self.password.Value = ""
+            self.confirm_pass.Value = ""
+            DebugLogger.log("[DEBUG] 成功安全清除密码记录")
 
     def validate_input(self, user, p1, p2):
         if not user:
-            wx.MessageBox("用户名不能为空!", "错误", wx.OK | wx.ICON_ERROR)
+            DebugLogger.log("[ERROR] 用户名为空")
+            wx.MessageBox("用户名不能为空!", "错误", wx.OK | wx.ICON_ERROR, parent=self)
             return False
         if p1 != p2:
-            wx.MessageBox("两次密码输入不一致!", "错误", wx.OK | wx.ICON_ERROR)
+            DebugLogger.log("[ERROR] 密码输入不一致")
+            wx.MessageBox("两次密码输入不一致!", "错误", wx.OK | wx.ICON_ERROR, parent=self)
             return False
         return True
 

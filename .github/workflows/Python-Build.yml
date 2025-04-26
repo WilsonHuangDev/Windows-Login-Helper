@@ -42,7 +42,7 @@ jobs:
     - name: Build EXE
       shell: bash {0}
       run: |
-        ./nuitka-build.sh "${{ github.event.inputs.release_tag }}"
+        ./Scripts/nuitka-build.sh "${{ github.event.inputs.release_tag }}"
 
     - name: Upload EXE to GitHub Actions
       uses: actions/upload-artifact@v4
