@@ -13,21 +13,20 @@ class LoginWindow(wx.Frame):
         super().__init__(None, title="Windows 登录辅助工具", size=(360, 200), style=style)
         self._app_ref = wx.GetApp()  # 保持应用引用
         self.SetIcon(wx.Icon("./Assets/icon.ico"))  # 设置窗口图标
+        # 加载配置文件（程序启动后第3次调用_get_dir_path）
         self._load_config()
-
         # 绑定关闭窗口事件
         self.Bind(wx.EVT_CLOSE, self.on_close)
-
         self.init_ui()
         self._init_timer()
         self.Center()
         self._debug_print("[DEBUG] LoginWindow 初始化完成")
 
         if self.auth_mode in (2, 3):
+            # 加载密钥表，生成初始动态口令（程序启动后第4次调用_get_dir_path）
             wx.CallAfter(self._log_initial_password)
 
     def _load_config(self):
-        # 加载配置文件（程序启动后第2次调用_get_dir_path）
         self.config = ConfigManager.get_config()
         self.auth_mode = self.config.get('auth_mode', 0)
         self.static_password = self.config.get('static_password', '')
@@ -135,8 +134,9 @@ class LoginWindow(wx.Frame):
             input_pass = self.password_entry.GetValue()
             self._debug_print(f"[DEBUG] 开始验证输入: {input_pass}")
 
+            # 加载密钥表，验证口令（程序启动后第5次调用_get_dir_path）
             if self.validate_password(input_pass):
-                self._debug_print("[DEBUG] 验证成功")
+                self._debug_print("[DEBUG] 认证成功")
                 from modules.main_window import MainWindow
                 WindowManager().switch_window(MainWindow)
             else:

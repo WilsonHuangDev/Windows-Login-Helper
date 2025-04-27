@@ -51,7 +51,7 @@ class ProcessManager:
 
             logger = DebugLogger()  # 实例化（此时才会创建进程）
 
-            # 读取配置并选择初始窗口类
+            # 读取配置并选择初始窗口类（程序启动后第2次调用_get_dir_path）
             config = ConfigManager.get_config()
             auth_mode = config.get('auth_mode', 0)
 
@@ -60,6 +60,7 @@ class ProcessManager:
                 from modules.main_window import MainWindow
                 initial_window_class = MainWindow
             else:
+                DebugLogger.log(f"[DEBUG] 模式{auth_mode}: 开启认证窗口")
                 from modules.login_window import LoginWindow
                 initial_window_class = LoginWindow
 
