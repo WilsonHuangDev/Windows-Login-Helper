@@ -38,7 +38,8 @@ class MainWindow(wx.Frame):
         btn_sizer.Add(btn_power, flag=wx.EXPAND)
         btn_sizer.Add(self.btn_exit, flag=wx.EXPAND)
 
-        # 设置退出登录按钮样式（程序启动后第6次、认证模式0时第3次调用_get_dir_path）
+        # 设置退出登录按钮样式（程序启动后第7次、认证模式0时第4次调用_get_dir_path方法）
+        DebugLogger.log("[DEBUG] 开始加载配置文件以设置退出登录按钮样式（程序启动后第7次、认证模式0时第4次调用_get_dir_path方法）")
         self._update_button_state()
 
         tooltip_text = wx.StaticText(panel, label="请选择功能", style=wx.ALIGN_CENTER)

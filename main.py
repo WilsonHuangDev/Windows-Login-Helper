@@ -51,7 +51,8 @@ class ProcessManager:
 
             logger = DebugLogger()  # 实例化（此时才会创建进程）
 
-            # 读取配置并选择初始窗口类（程序启动后第2次调用_get_dir_path）
+            # 读取配置并选择初始窗口类（程序启动后第3次调用_get_dir_path方法）
+            DebugLogger.log("[DEBUG] 开始读取配置文件并选择初始窗口类（程序启动后第3次调用_get_dir_path方法）")
             config = ConfigManager.get_config()
             auth_mode = config.get('auth_mode', 0)
 
