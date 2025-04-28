@@ -3,6 +3,8 @@ import datetime
 import multiprocessing
 import wx
 import queue
+import ctypes
+import ctypes.wintypes
 
 
 class DebugLogger:
@@ -13,23 +15,33 @@ class DebugLogger:
 
     def __new__(cls):
         if not cls._instance:
-            cls._instance = super().__new__(cls)
-            # 加载配置文件读取调试模式（程序启动后第1次调用_get_dir_path方法）
-            DebugLogger.log("[DEBUG] 开始加载配置文件读取调试模式（程序启动后第1次调用_get_dir_path方法）")
-            cls.set_debug_mode()
-            # 设置日志文件路径（程序启动后第2次调用_get_dir_path方法）
-            DebugLogger.log("[DEBUG] 开始设置日志文件输出路径（程序启动后第2次调用_get_dir_path方法）")
-            cls._set_log_file_path()
-            # 根据 debug_mode 初始化队列和进程
-            if cls.debug_mode:
-                cls.queue = multiprocessing.Queue()
-                cls.process = multiprocessing.Process(
-                    target=cls._run_debug_window,
-                    args=(cls.queue,),
-                    daemon=True
-                )
-                cls.process.start()
-            cls._flush_temp_logs()  # 输出暂存日志到日志文件
+            try:
+                cls._instance = super().__new__(cls)
+                # 加载配置文件读取调试模式（程序启动后第1次调用_get_dir_path方法）
+                DebugLogger.log("[DEBUG] 开始加载配置文件读取调试模式（程序启动后第1次调用_get_dir_path方法）")
+                cls.set_debug_mode()
+                # 初始化日志文件夹路径（程序启动后第2次调用_get_dir_path方法）
+                DebugLogger.log("[DEBUG] 开始初始化日志文件夹路径（程序启动后第2次调用_get_dir_path方法）")
+                cls._initialize_log_folder()
+                # 设置日志文件路径
+                DebugLogger.log("[DEBUG] 开始设置日志文件输出路径")
+                cls._set_log_file_path()
+                # 清理7天前的日志文件
+                DebugLogger.log("[DEBUG] 开始清理7天前的日志文件")
+                cls._clean_old_logs()
+                # 根据 debug_mode 初始化队列和进程
+                if cls.debug_mode:
+                    cls.queue = multiprocessing.Queue()
+                    cls.process = multiprocessing.Process(
+                        target=cls._run_debug_window,
+                        args=(cls.queue,),
+                        daemon=True
+                    )
+                    cls.process.start()
+                cls._flush_temp_logs()  # 输出暂存日志到日志文件
+            except Exception as e:
+                DebugLogger.log(f"{str(e)}")
+                ctypes.windll.user32.MessageBoxW(0, f"{str(e)}", "错误", 0x10)
         return cls._instance
 
     @classmethod
@@ -40,21 +52,53 @@ class DebugLogger:
         debug_mode = config.get('debug_mode', 0) == 1
         cls.debug_mode = debug_mode
 
+    @classmethod
+    def _initialize_log_folder(cls):
+        """初始化日志文件夹路径，仅调用一次"""
+        from modules.config_manager import ConfigManager
+        log_dir = ConfigManager._get_dir_path()
+        cls.log_folder = os.path.join(log_dir, 'Logs')  # 保存日志文件夹路径
+        DebugLogger.log(f"[DEBUG] 日志文件夹路径已初始化为: {cls.log_folder}")
+
     @staticmethod
     def _set_log_file_path():
-        # 延迟导入 ConfigManager
-        from modules.config_manager import ConfigManager
-        # 通过_get_dir_path获取基础目录
-        log_dir = ConfigManager._get_dir_path()
-        # 拼接日志文件夹路径
-        log_folder = os.path.join(log_dir, 'Logs')
-        # 动态生成日志文件名
+        """设置日志文件路径"""
+        if not hasattr(DebugLogger, 'log_folder'):
+            raise Exception("[ERROR] 日志文件夹路径未初始化, 无法记录日志")
         current_date = datetime.datetime.now().strftime("%Y%m%d")
         log_name = f'debug_{current_date}.log'
-        log_path = os.path.join(log_folder, log_name)  # 合并完整路径
+        log_path = os.path.join(DebugLogger.log_folder, log_name)  # 合并完整路径
         DebugLogger.log_file_path = log_path  # 更新类属性
         DebugLogger.log(f"[DEBUG] 日志文件输出路径: {log_path}")
         return log_path
+
+    @staticmethod
+    def _clean_old_logs():
+        """清理 7 天前的日志文件"""
+        try:
+            if not hasattr(DebugLogger, 'log_folder'):
+                raise Exception("日志文件夹路径未初始化, 无法读取并清理7天前的日志文件")
+            now = datetime.datetime.now()
+            for file_name in os.listdir(DebugLogger.log_folder):
+                file_path = os.path.join(DebugLogger.log_folder, file_name)
+                if os.path.isfile(file_path) and file_name.startswith("debug_") and file_name.endswith(".log"):
+                    try:
+                        file_date_str = file_name[6:14]
+                        file_date = datetime.datetime.strptime(file_date_str, "%Y%m%d")
+                        if (now - file_date).days > 7:
+                            # 调用 Windows API 删除文件
+                            DeleteFileW = ctypes.windll.kernel32.DeleteFileW
+                            DeleteFileW.argtypes = [ctypes.wintypes.LPCWSTR]
+                            DeleteFileW.restype = ctypes.wintypes.BOOL
+                            if not DeleteFileW(file_path):
+                                raise Exception(f"删除失败: {file_name}")
+                            else:
+                                DebugLogger.log(f"[DEBUG] 成功清理7天前的日志文件: {file_name}")
+                    except ValueError:
+                        raise Exception(f"无法解析日志文件日期: {file_name}")
+        except Exception as e:
+            DebugLogger.log(f"[ERROR] 清理日志文件失败: {str(e)}")
+            ctypes.windll.user32.MessageBoxW(0, f"[ERROR] 清理日志文件失败: {str(e)}", "错误", 0x10)
 
     @classmethod
     def _run_debug_window(cls, queue):
