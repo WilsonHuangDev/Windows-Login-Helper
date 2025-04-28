@@ -5,6 +5,7 @@ import time
 
 import wx
 
+from modules.config_manager import ConfigManager
 from modules.debug_logger import DebugLogger
 from modules.window_manager import WindowManager
 
@@ -50,12 +51,23 @@ class ProcessManager:
 
             logger = DebugLogger()  # 实例化（此时才会创建进程）
 
-            # 初始化窗口管理器
-            from modules.login_window import LoginWindow
+            # 读取配置并选择初始窗口类（程序启动后第3次调用_get_dir_path方法）
+            DebugLogger.log("[DEBUG] 开始读取配置文件并选择初始窗口类（程序启动后第3次调用_get_dir_path方法）")
+            config = ConfigManager.get_config()
+            auth_mode = config.get('auth_mode', 0)
+
+            if auth_mode == 0:
+                DebugLogger.log("[DEBUG] 模式0: 跳过密码验证")
+                from modules.main_window import MainWindow
+                initial_window_class = MainWindow
+            else:
+                DebugLogger.log(f"[DEBUG] 模式{auth_mode}: 开启认证窗口")
+                from modules.login_window import LoginWindow
+                initial_window_class = LoginWindow
 
             # 首次窗口显示
             if not WindowManager().current_window:
-                WindowManager().switch_window(LoginWindow)
+                WindowManager().switch_window(initial_window_class)  #动态加载窗口类
 
             app.MainLoop()
 

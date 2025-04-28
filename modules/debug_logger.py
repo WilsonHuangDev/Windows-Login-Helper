@@ -14,10 +14,13 @@ class DebugLogger:
     def __new__(cls):
         if not cls._instance:
             cls._instance = super().__new__(cls)
+            # 加载配置文件读取调试模式（程序启动后第1次调用_get_dir_path方法）
+            DebugLogger.log("[DEBUG] 开始加载配置文件读取调试模式（程序启动后第1次调用_get_dir_path方法）")
             cls.set_debug_mode()
-            # 设置日志文件路径（程序启动后第1次调用_get_dir_path）
+            # 设置日志文件路径（程序启动后第2次调用_get_dir_path方法）
+            DebugLogger.log("[DEBUG] 开始设置日志文件输出路径（程序启动后第2次调用_get_dir_path方法）")
             cls._set_log_file_path()
-            # 仅在调试模式启用时初始化队列和进程
+            # 根据 debug_mode 初始化队列和进程
             if cls.debug_mode:
                 cls.queue = multiprocessing.Queue()
                 cls.process = multiprocessing.Process(
@@ -26,7 +29,7 @@ class DebugLogger:
                     daemon=True
                 )
                 cls.process.start()
-                cls._flush_temp_logs()  # 输出暂存日志到调试窗口
+            cls._flush_temp_logs()  # 输出暂存日志到日志文件
         return cls._instance
 
     @classmethod
@@ -63,7 +66,7 @@ class DebugLogger:
     @classmethod
     def log(cls, message):
         """线程安全的日志记录方法"""
-        if cls.debug_mode and hasattr(cls, 'queue'):
+        if hasattr(cls, 'queue'):
             cls.queue.put(message)
         else:
             cls._temp_log_queue.put(message)  # 暂存日志
@@ -71,13 +74,13 @@ class DebugLogger:
 
     @classmethod
     def _flush_temp_logs(cls):
-        """将暂存日志输出到调试窗口并保存到日志文件"""
+        """将暂存日志写入日志文件，并根据调试模式决定是否输出到调试窗口"""
         while not cls._temp_log_queue.empty():
             try:
                 message = cls._temp_log_queue.get_nowait()
-                if hasattr(cls, 'queue'):
-                    cls.queue.put(message)  # 输出到调试窗口
                 cls._write_to_file(message)  # 保存到日志文件
+                if cls.debug_mode and hasattr(cls, 'queue'):
+                    cls.queue.put(message)  # 仅在调试模式下输出到调试窗口
             except queue.Empty:
                 break
 

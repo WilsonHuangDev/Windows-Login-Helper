@@ -88,7 +88,7 @@ class WindowManager:
     def _safe_destroy_window(self, window):
         """安全销毁窗口方法"""
         try:
-            if window and window.IsShown():
+            if window:
                 DebugLogger.log(f"[WINDOW] 正在销毁 {window.__class__.__name__}")
                 window.Destroy()
         except Exception as e:

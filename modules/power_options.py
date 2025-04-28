@@ -63,11 +63,11 @@ class PowerOptionsWindow(wx.Frame):
 
         # 按钮区
         btn_sizer = wx.FlexGridSizer(rows=5, cols=1, vgap=10, hgap=30)
-        btn_shutdown = wx.Button(panel, label="关机", size=(130, 40))
-        btn_reboot = wx.Button(panel, label="重启", size=(130, 40))
-        self.btn_sleep = wx.Button(panel, label="睡眠", size=(130, 40))
-        self.btn_hibernate = wx.Button(panel, label="休眠", size=(130, 40))
-        btn_back = wx.Button(panel, label="返回", size=(130, 40))
+        btn_shutdown = wx.Button(panel, label="关机", size=(150, 40))
+        btn_reboot = wx.Button(panel, label="重启", size=(150, 40))
+        self.btn_sleep = wx.Button(panel, label="睡眠", size=(150, 40))
+        self.btn_hibernate = wx.Button(panel, label="休眠", size=(150, 40))
+        btn_back = wx.Button(panel, label="返回", size=(150, 40))
 
         btn_sizer.Add(btn_shutdown, flag=wx.EXPAND)
         btn_sizer.Add(btn_reboot, flag=wx.EXPAND)
@@ -103,7 +103,7 @@ class PowerOptionsWindow(wx.Frame):
         try:
             if platform.system() != "Windows":
                 DebugLogger.log("[ERROR] 操作失败: 仅支持Windows系统")
-                wx.MessageBox("[ERROR] 仅支持 Windows 系统!", "错误", wx.OK | wx.ICON_ERROR)
+                wx.MessageBox("[ERROR] 仅支持 Windows 系统!", "错误", wx.OK | wx.ICON_ERROR, parent=self)
                 raise NotImplementedError("[ERROR] 仅支持Windows系统")
 
             # 显示确认对话框
@@ -114,7 +114,7 @@ class PowerOptionsWindow(wx.Frame):
                 "hibernate": "休眠"
             }
             action_name = action_map.get(action)
-            confirm = wx.MessageBox(f"确定要执行 {action_name} 操作吗?", "确认操作", wx.YES_NO | wx.ICON_QUESTION)
+            confirm = wx.MessageBox(f"确定要执行 {action_name} 操作吗?", "确认操作", wx.YES_NO | wx.ICON_QUESTION, parent=self)
             if confirm != wx.YES:
                 DebugLogger.log(f"[DEBUG] 用户取消了 {action_name} 操作")
                 return
@@ -175,7 +175,7 @@ class PowerOptionsWindow(wx.Frame):
 
         except (Exception, RuntimeError, NotImplementedError) as e:
             DebugLogger.log(f"[ERROR] 操作失败: {str(e)}")
-            wx.MessageBox(f"[ERROR] 操作失败: {str(e)}", "错误", wx.OK | wx.ICON_ERROR)
+            wx.MessageBox(f"[ERROR] 操作失败: {str(e)}", "错误", wx.OK | wx.ICON_ERROR, parent=self)
         finally:
             if hToken:  # 检查 hToken 是否已被赋值
                 ctypes.windll.kernel32.CloseHandle(hToken)
@@ -255,4 +255,4 @@ class PowerOptionsWindow(wx.Frame):
             # 安全回退：启用按钮并提供提示
             self.btn_sleep.Enable(True)
             self.btn_hibernate.Enable(True)
-            wx.MessageBox(f"[ERROR] 更新电源按钮状态失败: {str(e)}\n已启用全部按钮", "警告", wx.OK | wx.ICON_WARNING)
+            wx.MessageBox(f"[ERROR] 更新电源按钮状态失败: {str(e)}\n已启用全部按钮", "警告", wx.OK | wx.ICON_WARNING, parent=self)
