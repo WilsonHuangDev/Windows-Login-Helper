@@ -5,7 +5,7 @@ import time
 
 import wx
 
-from modules.debug_window import DebugLogger
+from modules.debug_logger import DebugLogger
 from modules.window_manager import WindowManager
 
 

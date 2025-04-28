@@ -4,7 +4,7 @@ from .passwd_generator import PasswordGenerator
 from .cmd_executor import CommandExecutor
 from .main_window import MainWindow
 from .login_window import LoginWindow
-from .debug_window import DebugLogger
+from .debug_logger import DebugLogger
 from .power_options import PowerOptionsWindow
 from .window_manager import WindowManager
 

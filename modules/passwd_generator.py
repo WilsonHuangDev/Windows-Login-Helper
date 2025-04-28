@@ -3,7 +3,7 @@ import datetime
 import os
 
 from modules.config_manager import ConfigManager
-from modules.debug_window import DebugLogger
+from modules.debug_logger import DebugLogger
 
 
 class PasswordGenerator:

@@ -1,6 +1,6 @@
 import subprocess
 
-from modules.debug_window import DebugLogger
+from modules.debug_logger import DebugLogger
 
 
 class CommandExecutor:

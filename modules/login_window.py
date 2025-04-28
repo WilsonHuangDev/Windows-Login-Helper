@@ -3,7 +3,7 @@ import datetime
 
 from modules.config_manager import ConfigManager
 from modules.passwd_generator import PasswordGenerator
-from modules.debug_window import DebugLogger
+from modules.debug_logger import DebugLogger
 from modules.window_manager import WindowManager
 
 

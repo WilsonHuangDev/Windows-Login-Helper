@@ -3,7 +3,7 @@ import ctypes
 import platform
 
 from ctypes import wintypes
-from modules.debug_window import DebugLogger
+from modules.debug_logger import DebugLogger
 from modules.window_manager import WindowManager
 
 
