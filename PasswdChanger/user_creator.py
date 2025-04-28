@@ -1,3 +1,6 @@
+import ctypes
+import os
+
 import wx
 
 from modules.debug_logger import DebugLogger
@@ -71,6 +74,9 @@ class UserCreator(wx.Frame):
 
         btn_create.Bind(wx.EVT_BUTTON, self.on_create)
         btn_return.Bind(wx.EVT_BUTTON, self.on_return)
+        self.username.Bind(wx.EVT_SET_FOCUS, self.on_focus)
+        self.password.Bind(wx.EVT_SET_FOCUS, self.on_focus)
+        self.confirm_pass.Bind(wx.EVT_SET_FOCUS, self.on_focus)
 
     def on_create(self, event):
         try:
@@ -137,3 +143,33 @@ class UserCreator(wx.Frame):
         """处理关闭窗口事件"""
         DebugLogger.log("[DEBUG] 用户关闭创建用户窗口")
         WindowManager().switch_window(None)
+
+    def on_focus(self, event):
+        """当口令输入框获得焦点时，显示屏幕键盘"""
+        DebugLogger.log("[DEBUG] 口令输入框获得焦点，正在尝试显示屏幕键盘")
+        self._show_touch_keyboard()
+        event.Skip()
+
+    def _show_touch_keyboard(self):
+        """显示屏幕键盘"""
+        try:
+            import subprocess
+
+            # 先尝试关闭已运行的 TabTip.exe
+            subprocess.run(["taskkill", "/f", "/im", "TabTip.exe"], stdout=subprocess.DEVNULL,
+                           stderr=subprocess.DEVNULL)
+
+            # 动态解析屏幕键盘路径
+            keyboard_path = os.path.expandvars(r"%CommonProgramFiles%\Microsoft Shared\ink\TabTip.exe")
+            backup_keyboard_path = os.path.expandvars(r"%SystemRoot%\System32\osk.exe")
+
+            if os.path.exists(keyboard_path):
+                ctypes.windll.shell32.ShellExecuteW(None, "open", keyboard_path, None, None, 1)
+            else:
+                # 如果找不到屏幕键盘，则尝试使用备用屏幕键盘
+                if os.path.exists(backup_keyboard_path):
+                    ctypes.windll.shell32.ShellExecuteW(None, "open", backup_keyboard_path, None, None, 1)
+                else:
+                    DebugLogger.log("[ERROR] 未找到屏幕键盘程序")
+        except Exception as e:
+            DebugLogger.log(f"[ERROR] 无法启动屏幕键盘: {str(e)}")

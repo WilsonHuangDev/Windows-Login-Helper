@@ -1,3 +1,6 @@
+import ctypes
+import os
+
 import wx
 import datetime
 
@@ -21,7 +24,7 @@ class LoginWindow(wx.Frame):
         self.init_ui()
         self._init_timer()
         self.Center()
-        self._debug_print("[DEBUG] LoginWindow 初始化完成")
+        DebugLogger.log("[DEBUG] LoginWindow 初始化完成")
 
         if self.auth_mode in (2, 3):
             # 加载密钥表，生成初始动态口令（程序启动后第5次调用_get_dir_path方法）
@@ -61,6 +64,7 @@ class LoginWindow(wx.Frame):
         panel.SetSizer(main_sizer)
 
         btn_ok.Bind(wx.EVT_BUTTON, self.on_login)
+        self.password_entry.Bind(wx.EVT_SET_FOCUS, self.on_focus)
         self.password_entry.Bind(wx.EVT_TEXT_ENTER, self.on_login)
 
     def _init_timer(self):
@@ -69,22 +73,19 @@ class LoginWindow(wx.Frame):
         self.Bind(wx.EVT_TIMER, self._update_time_display, self.timer)
         self.timer.Start(5)
         self._update_time_display(None)
-        self._debug_print("[DEBUG] LoginWindow 时间显示定时器初始化完成")
+        DebugLogger.log("[DEBUG] LoginWindow 时间显示定时器初始化完成")
 
     def _update_time_display(self, event):
         current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self.time_display.SetLabel(current_time)
 
-    def _debug_print(self, message):
-        DebugLogger.log(message)
-
     def _log_initial_password(self):
         """安全记录初始口令"""
         try:
             dynamic_pass = PasswordGenerator.generate_dynamic_password()
-            self._debug_print(f"[DEBUG] 初始动态口令: {dynamic_pass}")
+            DebugLogger.log(f"[DEBUG] 初始动态口令: {dynamic_pass}")
         except (Exception, RuntimeError, NotImplementedError) as e:
-            self._debug_print(f"[ERROR] 动态口令生成失败: {str(e)}")
+            DebugLogger.log(f"[ERROR] 动态口令生成失败: {str(e)}")
             wx.MessageBox(f"[ERROR] 动态口令生成失败!\n{str(e)}", "错误", wx.OK | wx.ICON_ERROR, parent=self)
 
     def validate_password(self, input_pass):
@@ -94,9 +95,9 @@ class LoginWindow(wx.Frame):
 
             # 模式1：仅静态密码
             if self.auth_mode == 1:
-                self._debug_print(f"[DEBUG] 模式1验证 - 输入密码: {input_pass}")
+                DebugLogger.log(f"[DEBUG] 模式1验证 - 输入密码: {input_pass}")
                 if not self.static_password:
-                    self._debug_print("[ERROR] 静态密码未配置")
+                    DebugLogger.log("[ERROR] 静态密码未配置")
                     wx.MessageBox("[ERROR] 静态密码未配置!", "错误", wx.OK | wx.ICON_ERROR, parent=self)
                     return False
                 return input_pass == self.static_password
@@ -104,7 +105,7 @@ class LoginWindow(wx.Frame):
             # 模式2：仅动态口令
             elif self.auth_mode == 2:
                 current_dynamic = PasswordGenerator.generate_dynamic_password()
-                self._debug_print(f"[DEBUG] 模式2验证 - 输入: {input_pass} 正确口令: {current_dynamic}")
+                DebugLogger.log(f"[DEBUG] 模式2验证 - 输入: {input_pass} 正确口令: {current_dynamic}")
                 return input_pass == current_dynamic
 
             # 模式3：两者均可
@@ -113,18 +114,18 @@ class LoginWindow(wx.Frame):
                 valid_static = (input_pass == self.static_password) if self.static_password else False
                 valid_dynamic = (input_pass == current_dynamic)
 
-                self._debug_print(f"[DEBUG] 模式3验证 - 输入: {input_pass} 静态验证: {valid_static} 动态验证: {valid_dynamic}")
+                DebugLogger.log(f"[DEBUG] 模式3验证 - 输入: {input_pass} 静态验证: {valid_static} 动态验证: {valid_dynamic}")
                 return valid_static or valid_dynamic
 
             # 无效模式
             else:
-                self._debug_print(f"[ERROR] 无效认证模式: {self.auth_mode}")
+                DebugLogger.log(f"[ERROR] 无效认证模式: {self.auth_mode}")
                 wx.MessageBox("[ERROR] 无效的认证模式配置!", "错误", wx.OK | wx.ICON_ERROR, parent=self)
                 return False
 
         except (Exception, RuntimeError, NotImplementedError) as e:
             error_msg = f"[ERROR] 验证失败: {str(e)}"
-            self._debug_print(error_msg)
+            DebugLogger.log(error_msg)
             if self.debug_mode == 1:
                 import traceback
                 traceback.print_exc()
@@ -134,23 +135,53 @@ class LoginWindow(wx.Frame):
     def on_login(self, event):
         try:
             input_pass = self.password_entry.GetValue()
-            self._debug_print(f"[DEBUG] 开始验证输入: {input_pass}")
+            DebugLogger.log(f"[DEBUG] 开始验证输入: {input_pass}")
 
             # 加载配置文件密钥表，验证口令（程序启动后第6次调用_get_dir_path方法）
             DebugLogger.log("[DEBUG] 开始加载配置文件和密钥表验证口令（程序启动后第6次调用_get_dir_path方法）")
             if self.validate_password(input_pass):
-                self._debug_print("[DEBUG] 认证成功")
+                DebugLogger.log("[DEBUG] 认证成功")
                 from modules.main_window import MainWindow
                 WindowManager().switch_window(MainWindow)
             else:
-                self._debug_print("[WARNING] 认证失败")
+                DebugLogger.log("[WARNING] 认证失败")
                 wx.MessageBox("认证失败，请检查输入!", "错误", wx.OK | wx.ICON_ERROR, parent=self)
                 self.password_entry.SetValue("")
         except (Exception, RuntimeError, NotImplementedError) as e:
-            self._debug_print(f"[ERROR] 登录异常: {str(e)}")
+            DebugLogger.log(f"[ERROR] 登录异常: {str(e)}")
             wx.MessageBox(f"[ERROR] 发生错误!\n{str(e)}", "错误", wx.OK | wx.ICON_ERROR, parent=self)
 
     def on_close(self, event):
         """处理关闭窗口事件"""
-        self._debug_print("[DEBUG] 用户关闭认证窗口")
+        DebugLogger.log("[DEBUG] 用户关闭认证窗口")
         WindowManager().switch_window(None)
+
+    def on_focus(self, event):
+        """当口令输入框获得焦点时，显示屏幕键盘"""
+        DebugLogger.log("[DEBUG] 口令输入框获得焦点，正在尝试显示屏幕键盘")
+        self._show_touch_keyboard()
+        event.Skip()
+
+    def _show_touch_keyboard(self):
+        """显示屏幕键盘"""
+        try:
+            import subprocess
+
+            # 先尝试关闭已运行的 TabTip.exe
+            subprocess.run(["taskkill", "/f", "/im", "TabTip.exe"], stdout=subprocess.DEVNULL,
+                           stderr=subprocess.DEVNULL)
+
+            # 动态解析屏幕键盘路径
+            keyboard_path = os.path.expandvars(r"%CommonProgramFiles%\Microsoft Shared\ink\TabTip.exe")
+            backup_keyboard_path = os.path.expandvars(r"%SystemRoot%\System32\osk.exe")
+
+            if os.path.exists(keyboard_path):
+                ctypes.windll.shell32.ShellExecuteW(None, "open", keyboard_path, None, None, 1)
+            else:
+                # 如果找不到屏幕键盘，则尝试使用备用屏幕键盘
+                if os.path.exists(backup_keyboard_path):
+                    ctypes.windll.shell32.ShellExecuteW(None, "open", backup_keyboard_path, None, None, 1)
+                else:
+                    DebugLogger.log("[ERROR] 未找到屏幕键盘程序")
+        except Exception as e:
+            DebugLogger.log(f"[ERROR] 无法启动屏幕键盘: {str(e)}")
