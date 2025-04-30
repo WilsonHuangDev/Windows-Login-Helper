@@ -49,7 +49,7 @@ Source: "..\dist\Windows-Login-Helper\*"; DestDir: "{app}"; Flags: ignoreversion
 [Registry]
 ;Registry data from file LockScreen_WLH.reg
 Root: HKLM; Subkey: "SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\utilman.exe"; Flags: uninsdeletekey
-Root: HKLM; Subkey: "SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\utilman.exe"; ValueType: string; ValueName: "Debugger"; ValueData: "C:\Windows\WindowsLoginHelper\Start_WinLoginHelper.bat"; Flags: uninsdeletevalue
+Root: HKLM; Subkey: "SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\utilman.exe"; ValueType: string; ValueName: "Debugger"; ValueData: "C:\Windows\WindowsLoginHelper\Scripts\Start_WinLoginHelper.bat"; Flags: uninsdeletevalue
 ;End of registry data from file LockScreen_WLH.reg
 
 [UninstallDelete]
