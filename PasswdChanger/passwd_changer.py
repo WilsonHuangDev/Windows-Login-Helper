@@ -84,22 +84,14 @@ class PasswordChanger(wx.Frame):
         try:
             import subprocess
 
-            # 先尝试关闭已运行的 TabTip.exe
-            subprocess.run(["taskkill", "/f", "/im", "TabTip.exe"], stdout=subprocess.DEVNULL,
-                           stderr=subprocess.DEVNULL)
-
-            # 动态解析屏幕键盘路径
-            keyboard_path = os.path.expandvars(r"%CommonProgramFiles%\Microsoft Shared\ink\TabTip.exe")
-            backup_keyboard_path = os.path.expandvars(r"%SystemRoot%\System32\osk.exe")
+            # 动态获取屏幕键盘路径
+            system_root = os.environ.get("SystemRoot", r"C:\Windows")
+            keyboard_path = os.path.join(system_root, "System32", "osk.exe")
 
             if os.path.exists(keyboard_path):
                 ctypes.windll.shell32.ShellExecuteW(None, "open", keyboard_path, None, None, 1)
             else:
-                # 如果找不到屏幕键盘，则尝试使用备用屏幕键盘
-                if os.path.exists(backup_keyboard_path):
-                    ctypes.windll.shell32.ShellExecuteW(None, "open", backup_keyboard_path, None, None, 1)
-                else:
-                    DebugLogger.log("[ERROR] 未找到屏幕键盘程序")
+                DebugLogger.log("[ERROR] 未找到屏幕键盘程序")
         except Exception as e:
             DebugLogger.log(f"[ERROR] 无法启动屏幕键盘: {str(e)}")
 
