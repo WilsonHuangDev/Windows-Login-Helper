@@ -15,7 +15,7 @@ on:
         description: '版本发布通道'
         required: true
         type: choice
-        options: [Stable, Beta, Dev]
+        options: [Stable, Preview, Beta, Dev]
         default: 'Stable'
 
 env:
@@ -76,7 +76,7 @@ jobs:
       if: ${{ github.event.inputs.release_channel != 'Dev' }}
       uses: ncipollo/release-action@v1
       env:
-          IS_PRERELEASE: ${{ github.event.inputs.release_channel == 'Beta' }}
+          IS_PRERELEASE: ${{ github.event.inputs.release_channel == 'Preview' || github.event.inputs.release_channel == 'Beta' }}
       with:
         artifacts: release/*.exe
         draft: true
