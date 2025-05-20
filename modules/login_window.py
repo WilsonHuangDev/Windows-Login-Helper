@@ -1,9 +1,7 @@
-import ctypes
-import os
-
 import wx
 import datetime
 
+from modules.osk_manager import OSKManager
 from modules.config_manager import ConfigManager
 from modules.passwd_generator import PasswordGenerator
 from modules.debug_logger import DebugLogger
@@ -157,23 +155,7 @@ class LoginWindow(wx.Frame):
         WindowManager().switch_window(None)
 
     def on_focus(self, event):
-        """当口令输入框获得焦点时，显示屏幕键盘"""
-        DebugLogger.log("[DEBUG] 口令输入框获得焦点，正在尝试显示屏幕键盘")
-        self._show_touch_keyboard()
+        """当输入框获得焦点时，调用屏幕键盘管理器"""
+        DebugLogger.log("[DEBUG] 输入框获得焦点")
+        OSKManager().show_keyboard_if_needed()
         event.Skip()
-
-    def _show_touch_keyboard(self):
-        """显示屏幕键盘"""
-        try:
-            import subprocess
-
-            # 动态获取屏幕键盘路径
-            system_root = os.environ.get("SystemRoot", r"C:\Windows")
-            keyboard_path = os.path.join(system_root, "System32", "osk.exe")
-
-            if os.path.exists(keyboard_path):
-                ctypes.windll.shell32.ShellExecuteW(None, "open", keyboard_path, None, None, 1)
-            else:
-                DebugLogger.log("[ERROR] 未找到屏幕键盘程序")
-        except Exception as e:
-            DebugLogger.log(f"[ERROR] 无法启动屏幕键盘: {str(e)}")

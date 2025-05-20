@@ -8,6 +8,7 @@ from .debug_logger import DebugLogger
 from .power_options import PowerOptionsWindow
 from .tools_window import ToolsWindow
 from .window_manager import WindowManager
+from .osk_manager import OSKManager
 
 # 声明导出列表
 __all__ = [
@@ -19,5 +20,6 @@ __all__ = [
     "DebugLogger",
     "PowerOptionsWindow",
     "ToolsWindow",
-    "WindowManager"
+    "WindowManager",
+    "OSKManager"
 ]
